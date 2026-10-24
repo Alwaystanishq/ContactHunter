@@ -1,14 +1,20 @@
 {
   "manifest_version": 3,
-  "name": "ContactHunter Starter",
-  "version": "0.1.0",
-  "description": "A minimal browser extension starter with a popup, storage, and an on-demand content script.",
-  "permissions": ["activeTab", "scripting", "storage"],
+  "name": "ContactHunter",
+  "version": "1.0.0",
+  "minimum_chrome_version": "120",
+  "description": "Discover public emails and phone numbers with a timed, privacy-conscious website scan. Export contacts to CSV.",
+  "permissions": ["activeTab", "storage", "alarms", "offscreen"],
+  "optional_host_permissions": ["https://*/*", "http://*/*"],
   "action": {
     "default_title": "ContactHunter",
     "default_popup": "popup/popup.html"
   },
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; object-src 'none'; img-src 'none'; frame-src 'none'; media-src 'none'; connect-src https: http:; style-src 'self'"
   }
 }

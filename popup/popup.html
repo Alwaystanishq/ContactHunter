@@ -3,28 +3,57 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
     <title>ContactHunter</title>
     <link rel="stylesheet" href="popup.css" />
-    <script src="popup.js" defer></script>
+    <script type="module" src="popup.js"></script>
   </head>
   <body>
-    <main>
-      <span class="eyebrow">BROWSER EXTENSION STARTER</span>
-      <h1>ContactHunter<span aria-hidden="true">.</span></h1>
-      <p class="intro">Your extension starts here. Try running an action on the current page.</p>
+    <header class="header">
+      <div class="brand"><span class="brand-icon" aria-hidden="true">c<span></span></span><div><h1>ContactHunter</h1><p>A little discovery goes a long way.</p></div></div>
+      <span id="status-badge" class="badge" data-status="idle"><i></i><span>Ready</span></span>
+    </header>
 
-      <section class="card" aria-labelledby="demo-title">
-        <h2 id="demo-title">Link highlighter</h2>
-        <p>Outline links on this page. Run it again to clear the highlights.</p>
-        <div class="setting">
-          <label for="highlight-color">Highlight color</label>
-          <input id="highlight-color" type="color" value="#7c3aed" disabled />
+    <main>
+      <section class="scan-card" aria-label="Scan controls">
+        <div class="site-heading"><span class="label">TARGET WEBSITE</span><span class="public-tag"><span aria-hidden="true">◇</span> Public pages only</span></div>
+        <div class="site"><span class="site-icon" aria-hidden="true">◎</span><div><h2 id="site-name">Finding your active tab…</h2><p id="site-url">Open a website to begin</p></div></div>
+        <div class="settings">
+          <label>Scan duration<select id="duration"><option value="30">30 seconds</option><option value="60">1 minute</option><option value="120" selected>2 minutes</option><option value="300">5 minutes</option><option value="600">10 minutes</option></select></label>
+          <label>Page limit<select id="page-limit"><option value="25">25 pages</option><option value="50">50 pages</option><option value="100" selected>100 pages</option><option value="150">150 pages</option></select></label>
         </div>
-        <button id="run-action" type="button" disabled>Toggle link highlights</button>
+        <div class="controls">
+          <button id="start" class="primary" disabled><span aria-hidden="true">▷</span> Start scanning</button>
+          <button id="pause" class="primary" hidden><span aria-hidden="true">Ⅱ</span> Pause scan</button>
+          <button id="resume" class="primary" hidden><span aria-hidden="true">▷</span> Resume scan</button>
+          <button id="stop" class="secondary" hidden><span aria-hidden="true">□</span> Stop</button>
+        </div>
+        <div id="progress-section" class="progress-section" hidden>
+          <div class="progress-label"><span id="progress-label">Scanning</span><span id="timer">0:00 / 2:00</span></div>
+          <progress id="progress" max="100" value="0" aria-label="Scan progress"></progress>
+          <p id="current-url" class="current-url"></p>
+        </div>
+        <p id="status-message" class="status-message" role="status" aria-live="polite">Checking the active tab…</p>
       </section>
 
-      <p id="status" class="status" role="status" aria-live="polite">Loading settings…</p>
-      <footer>Popup · Background worker · Content script</footer>
+      <section class="metrics" aria-label="Scan statistics">
+        <div><span id="email-count">0</span><p><span class="metric-icon" aria-hidden="true">@</span> Emails found</p></div>
+        <div><span id="phone-count">0</span><p><span class="metric-icon" aria-hidden="true">⌕</span> Phone numbers</p></div>
+        <div><span id="page-count">0</span><p><span class="metric-icon" aria-hidden="true">▤</span> Pages scanned</p></div>
+      </section>
+
+      <section class="results" aria-labelledby="results-heading">
+        <div class="results-heading"><h2 id="results-heading">Discovered contacts <span id="total-count">0</span></h2><button id="export" class="export" disabled><span aria-hidden="true">↓</span> Export CSV</button></div>
+        <div class="result-toolbar"><div class="filters" role="group" aria-label="Filter contacts"><button data-filter="all" aria-pressed="true">All</button><button data-filter="email" aria-pressed="false">Emails</button><button data-filter="phone" aria-pressed="false">Phones</button></div><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search contacts" aria-label="Search contacts" /></label></div>
+        <div id="empty" class="empty"><div class="empty-icon" aria-hidden="true"><span>⌕</span><i></i><b></b></div><h3>Your next connection starts here</h3><p>Start a scan to find public emails and phone numbers.<br />Your discoveries will appear as we find them.</p></div>
+        <ul id="contact-list" class="contact-list" aria-label="Discovered contacts"></ul>
+        <p id="result-summary" class="result-summary" hidden></p>
+      </section>
+
+      <details id="activity" class="activity" hidden><summary>Scan activity <span id="activity-count"></span></summary><ul id="activity-list"></ul></details>
+      <p id="notice" class="notice" role="alert" hidden></p>
     </main>
+
+    <footer><span><i aria-hidden="true"></i> On-device. No cookies. No uploads.</span><div><button id="clear" disabled>Clear results</button><button id="revoke" disabled>Revoke access</button></div></footer>
   </body>
 </html>
