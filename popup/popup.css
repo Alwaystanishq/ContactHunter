@@ -100,5 +100,42 @@ footer > span { display: flex; align-items: center; gap: 5px; font-size: 8px; co
 footer > div { display: flex; gap: 10px; }
 footer button { border: 0; padding: 0; background: transparent; color: #809486; font-size: 8px; }
 footer button:hover:enabled { color: #087f70; text-decoration: underline; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+#export-review { width: calc(100% - 24px); max-width: 436px; max-height: calc(100vh - 24px); margin: auto; padding: 0; border: 1px solid #dce7e0; border-radius: 14px; background: #fff; color: #233936; box-shadow: 0 16px 60px #183e3033; }
+#export-review[open] { display: flex; flex-direction: column; }
+#export-review::backdrop { background: #173d3166; }
+.review-heading { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; padding: 17px 17px 0; }
+.review-heading h2 { margin: 5px 0 0; font-size: 18px; letter-spacing: -.5px; }
+.review-close { border: 0; border-radius: 6px; width: 28px; height: 28px; background: #f0f5f1; color: #6f8778; font-size: 22px; }
+.review-description { flex-shrink: 0; margin: 10px 17px; color: #74877b; font-size: 11px; line-height: 1.5; }
+.review-totals { display: flex; justify-content: space-between; align-items: center; gap: 7px; flex-shrink: 0; margin: 0 17px; padding: 9px 10px; border-radius: 7px; background: #edf6f0; color: #44765b; }
+.review-totals strong { font-size: 11px; }
+.review-totals > span { font-size: 9px; }
+.review-snapshot { flex-shrink: 0; min-height: 26px; margin: 7px 17px 9px; font-size: 9px; color: #819386; line-height: 1.5; overflow-wrap: anywhere; }
+.review-tools { display: flex; gap: 8px; flex-shrink: 0; margin: 0 17px; }
+.review-tools .search { flex: 1; max-width: none; }
+.review-tools select { margin: 0; width: 100px; padding: 7px; }
+.review-bulk { display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-shrink: 0; margin: 11px 17px 0; font-size: 10px; color: #607b69; }
+.review-bulk > label, .review-selected-only { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+#export-review input[type="checkbox"] { width: 14px; height: 14px; margin: 0; accent-color: #087f70; flex-shrink: 0; cursor: pointer; }
+.review-bulk > div { display: flex; gap: 10px; }
+.review-bulk button { border: 0; background: transparent; padding: 2px 0; color: #087f70; font-size: 10px; }
+.review-bulk button:hover:enabled { text-decoration: underline; }
+.review-selected-only { flex-shrink: 0; margin: 9px 17px; font-size: 10px; color: #809486; }
+.review-scroll { flex: 1; min-height: 50px; max-height: 220px; margin: 0 17px; overflow-y: auto; scrollbar-width: thin; }
+.review-list { list-style: none; padding: 0; margin: 0; }
+.review-list > li { display: flex; gap: 9px; align-items: flex-start; padding: 10px 2px; border-bottom: 1px solid #e6ede8; }
+.review-list input { margin-top: 2px !important; }
+.review-contact-info { flex: 1; min-width: 0; }
+.review-contact-value { color: #355546; font-size: 11px; font-weight: 600; overflow-wrap: anywhere; cursor: pointer; }
+.review-contact-type { margin-left: 6px; font-size: 9px; color: #8da193; }
+.review-contact-source { display: block; margin-top: 4px; color: #809888; font-size: 9px; line-height: 1.5; text-decoration: none; overflow-wrap: anywhere; }
+.review-contact-source:hover { color: #087f70; text-decoration: underline; }
+.review-empty { padding: 16px 0; font-size: 11px; text-align: center; color: #839889; }
+.review-pagination { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; margin: 9px 17px; font-size: 9px; color: #879b8b; }
+.review-pagination button { border: 1px solid #dde8e0; border-radius: 5px; padding: 4px 6px; background: #fff; font-size: 10px; color: #527961; }
+.review-error { flex-shrink: 0; margin: 0 17px 10px; font-size: 11px; color: #a54d35; }
+.review-footer { display: flex; gap: 9px; flex-shrink: 0; padding: 12px 17px; border-top: 1px solid #e3eae5; background: #f8fbf9; }
+.review-footer button { padding: 10px 13px; border-radius: 7px; font-size: 12px; font-weight: 600; }
 @keyframes pulse { 50% { opacity: .3; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

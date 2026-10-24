@@ -1,4 +1,4 @@
-import { contactsToCsv } from "../lib/csv.js";
+import { ExportReview } from "./export-review.js";
 import { ACTIVE, emptyScan, elapsedTime } from "../lib/crawler.js";
 import { normalizeUrl, sitePattern } from "../lib/urls.js";
 
@@ -11,6 +11,7 @@ let busy = true;
 let siteAllowed = false;
 let lastContacts = null;
 let lastLogs = null;
+const exportReview = new ExportReview($("export-review"), notice);
 
 function notice(message = "") {
   $("notice").textContent = message;
@@ -41,7 +42,7 @@ function renderContacts(force = false) {
   const contacts = scan.contacts.filter((contact) => (filter === "all" || contact.type === filter) &&
     (!query || `${contact.value} ${contact.sources.join(" ")}`.toLowerCase().includes(query)));
   const fragment = document.createDocumentFragment();
-  // Keep the popup responsive; CSV always includes the entire result set.
+  // Keep the popup responsive; export review can access the entire result set.
   for (const contact of contacts.slice(0, 150)) {
     const row = document.createElement("li");
     const icon = document.createElement("span");
@@ -87,7 +88,7 @@ function renderContacts(force = false) {
     : scan.status === "idle" ? "Start a scan to find public emails and phone numbers. Your discoveries will appear as we find them."
       : "No contacts collected. Check scan activity for skipped pages or try another public website.";
   $("result-summary").hidden = !contacts.length;
-  $("result-summary").textContent = `${Math.min(contacts.length, 150)} of ${contacts.length} matching contacts · Duplicates removed${contacts.length > 150 ? " · Export for all results" : ""}`;
+  $("result-summary").textContent = `${Math.min(contacts.length, 150)} of ${contacts.length} matching contacts · Duplicates removed${contacts.length > 150 ? " · Review export to see all" : ""}`;
 }
 
 function renderActivity() {
@@ -133,7 +134,7 @@ function render() {
     $("duration").value = String(scan.durationMs / 1000);
     $("page-limit").value = String(scan.maxPages);
   }
-  $("export").disabled = !scan.contacts.length;
+  $("export").disabled = busy || !scan.contacts.length;
   $("clear").disabled = busy || scan.status === "idle";
   $("revoke").disabled = busy || !siteAllowed;
   $("revoke").title = `Stop scanning and revoke access to ${scan.origin || selectedOrigin || "this website"}`;
@@ -149,6 +150,7 @@ function render() {
   renderClock();
   renderContacts();
   renderActivity();
+  exportReview.sync(scan);
 }
 
 async function checkPermission() {
@@ -199,15 +201,7 @@ document.querySelectorAll("[data-filter]").forEach((button) => {
 $("search").addEventListener("input", () => renderContacts(true));
 
 $("export").addEventListener("click", () => {
-  if (!scan.contacts.length) return;
-  const url = URL.createObjectURL(new Blob([contactsToCsv(scan.contacts)], { type: "text/csv;charset=utf-8" }));
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `contacthunter-${new URL(scan.origin).hostname}-${new Date().toISOString().slice(0, 10)}.csv`;
-  document.body.append(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 10000);
+  if (!busy) exportReview.open(scan);
 });
 
 chrome.storage.onChanged.addListener((changes, area) => {

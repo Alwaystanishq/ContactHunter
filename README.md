@@ -18,7 +18,10 @@ After changing extension files, click **Reload** on its extension card and reope
 3. Click **Start scanning** and grant Chrome access to that website if prompted.
 4. Watch emails, phone numbers, page counts, and scan activity update live.
 5. **Pause** cancels the in-flight request and freezes the remaining scan time. **Resume** continues the queue. **Stop** ends the scan and retains its results.
-6. Search or filter contacts, copy individual values, or select **Export CSV** to download every collected contact and its retained source URLs.
+6. Search or filter contacts, copy individual values, or select **Review export** to open the export review. Uncheck unwanted contacts, search or filter the review, and use **Select matching**, **Select all**, or **Clear selection** to adjust the download. All captured contacts can be reviewed in pages of 50, including their retained source URLs. **Show selected only** previews the included contacts.
+7. Select **Download CSV** to export only the checked contacts. The review shows both the unique contact count and the CSV row count (one row per source). **Cancel** or Escape closes review without downloading or deleting results.
+
+Export review captures the contacts and sources available when it opens. A live scan can continue, but newer contacts and source updates are excluded from that download; close and reopen review to include them. Selections reset when the review closes. The main results filters do not limit the review's initial snapshot. Clearing results or replacing the scan closes an open review.
 
 The scan continues when you close the popup. Only one scan runs at a time. Starting a new scan replaces previous results. **Clear results** stops an active scan and removes its contacts and activity. **Revoke access** stops the scan and removes its website permission; existing results remain available for export until cleared.
 
@@ -44,7 +47,7 @@ Public availability is not permission for unrestricted reuse. Use ContactHunter 
 - Only `page`, `p`, `lang`, and `hl` query parameters are accepted. Common tracking parameters and fragments are removed; other query-string URLs are excluded to avoid private tokens and crawler traps.
 - Email matching is case insensitive and supports common ASCII addresses. Phone detection uses formatting and nearby phone labels, excludes common dates, IP addresses, URLs, email addresses, and labeled identifiers, and accepts explicit `tel:` links. It supports `+`/`00` international prefixes, common optional `(0)` trunk prefixes, extensions, numeric telephone-link contexts, and Arabic/Persian/full-width digits. Unformatted local numbers require a phone label or telephone link. Country codes are not guessed for local numbers. These offline checks do not verify every national numbering plan or whether a number is assigned or reachable; review candidates before use.
 - Each scan checks at most 150 pages, discovers at most 500 URLs, and retains at most 1,000 unique contacts with up to 5 distinct source pages each. Page responses are limited to 2 MiB and robots files to 512 KiB; individual requests time out after 12 seconds or when scan time expires.
-- The popup displays up to 150 contacts matching the current filter. CSV includes all retained contacts, regardless of the filter, with one row per retained source URL. Formula-like values are prefixed with an apostrophe for spreadsheet safety.
+- The main results list displays up to 150 contacts matching the current filter. Export review provides access to all captured contacts and exports only selected contacts, with one row per retained source URL. Formula-like values are prefixed with an apostrophe for spreadsheet safety.
 - A scan may finish before its selected duration if eligible pages run out or a limit or access restriction is reached.
 
 ## Project structure
