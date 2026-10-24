@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "ContactHunter Starter",
+  "version": "0.1.0",
+  "description": "A minimal browser extension starter with a popup, storage, and an on-demand content script.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "action": {
+    "default_title": "ContactHunter",
+    "default_popup": "popup/popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

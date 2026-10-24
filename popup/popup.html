@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ContactHunter</title>
+    <link rel="stylesheet" href="popup.css" />
+    <script src="popup.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <span class="eyebrow">BROWSER EXTENSION STARTER</span>
+      <h1>ContactHunter<span aria-hidden="true">.</span></h1>
+      <p class="intro">Your extension starts here. Try running an action on the current page.</p>
+
+      <section class="card" aria-labelledby="demo-title">
+        <h2 id="demo-title">Link highlighter</h2>
+        <p>Outline links on this page. Run it again to clear the highlights.</p>
+        <div class="setting">
+          <label for="highlight-color">Highlight color</label>
+          <input id="highlight-color" type="color" value="#7c3aed" disabled />
+        </div>
+        <button id="run-action" type="button" disabled>Toggle link highlights</button>
+      </section>
+
+      <p id="status" class="status" role="status" aria-live="polite">Loading settings…</p>
+      <footer>Popup · Background worker · Content script</footer>
+    </main>
+  </body>
+</html>
