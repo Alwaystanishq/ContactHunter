@@ -137,5 +137,28 @@ footer button:hover:enabled { color: #087f70; text-decoration: underline; }
 .review-error { flex-shrink: 0; margin: 0 17px 10px; font-size: 11px; color: #a54d35; }
 .review-footer { display: flex; gap: 9px; flex-shrink: 0; padding: 12px 17px; border-top: 1px solid #e3eae5; background: #f8fbf9; }
 .review-footer button { padding: 10px 13px; border-radius: 7px; font-size: 12px; font-weight: 600; }
+.history { margin-top: 16px; border-top: 1px solid #e1e9e3; padding-top: 13px; color: #607d69; }
+.history > summary { cursor: pointer; font-size: 11px; font-weight: 600; }
+.history > summary > span { float: right; font-size: 9px; color: #91a094; font-weight: 400; }
+.history-settings { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 14px; }
+.history-toggle { display: flex; align-items: center; gap: 6px; font-size: 10px; line-height: 1.5; cursor: pointer; }
+.history-toggle input { width: 14px; height: 14px; accent-color: #087f70; flex-shrink: 0; }
+.history-retention { font-size: 9px; color: #829789; }
+.history-retention select { margin-top: 4px; padding: 6px 8px; width: 87px; }
+.history-description { margin: 10px 0; font-size: 9px; color: #8a9d8e; line-height: 1.7; }
+.history-search { max-width: none; width: 100%; }
+.history-list { list-style: none; padding: 0; margin: 10px 0; }
+.history-list > li { padding: 12px; margin-bottom: 9px; border: 1px solid #e0e9e3; border-radius: 9px; background: #fff; }
+.history-entry-heading { display: flex; align-items: center; justify-content: space-between; gap: 7px; }
+.history-entry-heading strong { min-width: 0; overflow-wrap: anywhere; font-size: 12px; font-weight: 600; }
+.history-entry-heading > span { font-size: 9px; flex-shrink: 0; color: #799582; }
+.history-date { margin: 5px 0; font-size: 9px; color: #93a398; }
+.history-stats { margin: 7px 0; font-size: 10px; color: #5a7b65; }
+.history-message { margin: 6px 0; color: #8d9e91; font-size: 9px; line-height: 1.5; }
+.history-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 10px; }
+.history-delete, .history-footer button { padding: 2px; border: 0; background: transparent; font-size: 9px; color: #a26d5a; }
+.history-delete:hover:enabled, .history-footer button:hover:enabled { text-decoration: underline; }
+.history-empty { margin: 18px 0; text-align: center; font-size: 10px; color: #91a093; line-height: 1.7; }
+.history-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 10px; font-size: 8px; color: #96a49a; }
 @keyframes pulse { 50% { opacity: .3; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

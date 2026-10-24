@@ -4,6 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check background.js && node --check content.js && node --check lib/contacts.js && node --check lib/phones.js && node --check popup/popup.js && node --check popup/export-review.js && node --check offscreen/offscreen.js"
+    "check": "node --check background.js && node --check content.js && node --check lib/contacts.js && node --check lib/phones.js && node --check lib/history.js && node --check popup/popup.js && node --check popup/export-review.js && node --check popup/history.js && node --check offscreen/offscreen.js"
   }
 }

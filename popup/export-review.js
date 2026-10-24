@@ -41,13 +41,16 @@ export class ExportReview {
     this.$("download").addEventListener("click", () => this.download());
   }
 
-  open(scan) {
+  open(scan, { saved = false } = {}) {
     if (!scan.contacts.length || this.dialog.open) return;
     // Freeze contacts AND sources: live scanning must not silently change a CSV
     // after the user has reviewed it. Main-view filters do not hide this snapshot.
     this.contacts = structuredClone(scan.contacts);
     this.scanId = scan.id;
     this.origin = scan.origin;
+    this.saved = saved;
+    this.savedExpiresAt = scan.expiresAt;
+    this.$("heading").textContent = saved ? "Review saved contacts" : "Choose your contacts";
     this.selected = new Set(this.contacts.map(keyOf));
     this.page = 0;
     this.$("search").value = "";
@@ -57,11 +60,13 @@ export class ExportReview {
     this.render();
     this.dialog.showModal();
     this.$("search").focus();
-    this.sync(scan);
+    if (saved) {
+      this.$("snapshot").textContent = `Saved scan from ${new URL(scan.origin).host} · ${new Date(scan.finishedAt).toLocaleString()}`;
+    } else this.sync(scan);
   }
 
   sync(scan) {
-    if (!this.dialog.open) return;
+    if (!this.dialog.open || this.saved) return;
     if (scan.id !== this.scanId) {
       this.dialog.close();
       this.onInvalidated("Export review closed because the scan was cleared or replaced. Review the current results before exporting.");
@@ -73,6 +78,15 @@ export class ExportReview {
       ? `${added} new contact${added === 1 ? "" : "s"} found since review opened. Reopen review to include newer results.`
       : `Snapshot from ${new URL(this.origin).host}. New contacts and source updates stay out of this download.`;
     if (this.$("snapshot").textContent !== message) this.$("snapshot").textContent = message;
+  }
+
+  syncHistory(entries) {
+    if (!this.dialog.open || !this.saved) return;
+    const entry = entries.find((item) => item.id === this.scanId);
+    if (!entry) {
+      this.dialog.close();
+      this.onInvalidated("Export review closed because the saved scan was deleted or expired.");
+    } else this.savedExpiresAt = entry.expiresAt;
   }
 
   matches() {
@@ -156,6 +170,11 @@ export class ExportReview {
   }
 
   download() {
+    if (this.saved && Date.parse(this.savedExpiresAt) <= Date.now()) {
+      this.dialog.close();
+      this.onInvalidated("This saved scan has expired. Its contacts can no longer be exported from history.");
+      return;
+    }
     const contacts = this.contacts.filter((contact) => this.selected.has(keyOf(contact)));
     if (!this.dialog.open || !contacts.length) return;
     let url;

@@ -25,6 +25,16 @@ Export review captures the contacts and sources available when it opens. A live 
 
 The scan continues when you close the popup. Only one scan runs at a time. Starting a new scan replaces previous results. **Clear results** stops an active scan and removes its contacts and activity. **Revoke access** stops the scan and removes its website permission; existing results remain available for export until cleared.
 
+## Scan history
+
+Open **Scan history** and turn on **Save finished scans on this device** to retain future finished scans across browser restarts. History is disabled by default. Completed, stopped, blocked, and failed scans are saved with their collected contacts, source URLs, site, timestamp, page counts, and completion reason. In-progress and paused scans are not archived. Incognito scans are never saved to history.
+
+- Choose automatic deletion after **1, 7, or 30 days**, measured from each scan's finish time. The default is 7 days. Changing retention also updates existing entries and immediately removes entries that are now expired.
+- Search saved websites and choose **Review & export** to view contacts and select a CSV download. Opening history does not replace or interrupt a live scan. A saved scan cannot resume crawling.
+- Use **Delete** on an entry or **Delete all history** to remove saved copies. **Clear results** clears only the current session's results. Turning history saving off stops future saving; existing saved copies remain until expiry or deletion.
+- History is stored locally in this Chrome profile, without cloud sync or uploads. It retains up to **20 scans** within a **4 MiB** budget; oldest entries are removed when either limit is reached. Complete contact sets are preserved rather than silently truncated. A history storage failure is shown without discarding the current scan's results.
+- Expired entries are removed by a scheduled Chrome alarm or on the next history access/startup. Cleanup resumes when Chrome runs again. Deleted or expired saved scans cannot be reopened for export, and their open review is closed when history updates.
+
 ## Website access and privacy
 
 - Permission is requested for the selected website when you start. There is no installation-time access to every website. Chrome host permissions span ports, while the crawler enforces the selected page's exact origin, including its port.
@@ -36,7 +46,7 @@ The scan continues when you close the popup. Only one scan runs at a time. Start
 - Authentication, account, admin, checkout, and other sensitive URL paths are excluded. Pages containing password fields are skipped. Forms, scripts, frames, templates, and explicitly hidden content are excluded from extraction. Website scripts and assets are never inserted into the extension's live document.
 - No analytics, external API, cloud upload, or server-side contact storage is used. ContactHunter only makes page requests to the selected website. CSV export is user initiated.
 
-Contacts, sources, and crawl checkpoints are kept in `chrome.storage.session`, surviving popup closure and service-worker suspension. They are cleared when Chrome restarts or the extension is reloaded, updated, or disabled. Only duration and page-limit preferences use persistent local storage. CSV files you export remain on your device until you remove them.
+Current contacts, sources, and crawl checkpoints are kept in `chrome.storage.session`, surviving popup closure and service-worker suspension. They are cleared when Chrome restarts or the extension is reloaded, updated, or disabled. Duration and page-limit preferences, history preferences, and any opted-in saved history use persistent `chrome.storage.local`. Local extension storage is restricted to trusted extension contexts. Saved history survives restarts and extension reloads until its retention limit or manual deletion. CSV files you export remain on your device until you remove them.
 
 Public availability is not permission for unrestricted reuse. Use ContactHunter only where you are authorized to collect information, and respect website terms and applicable privacy obligations. Access checks are technical safeguards; the extension does not determine consent or legal permission to use a contact.
 
@@ -60,12 +70,13 @@ lib/
   crawler.js            Timed crawl queue and scan controls
   contacts.js           Contact matching, normalization, and deduplication
   phones.js             Context-aware phone extraction and formatting checks
+  history.js            Opt-in archives, retention, deletion, and storage limits
   robots.js             Crawl rules and page directives
   urls.js               URL normalization and scope restrictions
   network.js            Bounded, credential-free page fetching
   csv.js                CSV formatting and formula protection
 offscreen/              Hidden HTML parser document
-popup/                  Interface, live results, filtering, and export
+popup/                  Interface, live results, history, and export review
 ```
 
 To check JavaScript syntax with Node.js installed, run `npm run check`. No package installation is needed. Browser UI and installation behavior have not been verified in this environment.

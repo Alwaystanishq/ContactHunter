@@ -51,6 +51,19 @@
       </section>
 
       <details id="activity" class="activity" hidden><summary>Scan activity <span id="activity-count"></span></summary><ul id="activity-list"></ul></details>
+      <details id="history" class="history">
+        <summary>Scan history <span id="history-count">Off</span></summary>
+        <div class="history-settings">
+          <label class="history-toggle"><input id="history-enabled" type="checkbox" disabled /> Save finished scans on this device</label>
+          <label class="history-retention">Auto-delete after<select id="history-retention" disabled><option value="1">1 day</option><option value="7" selected>7 days</option><option value="30">30 days</option></select></label>
+        </div>
+        <p class="history-description">Optional, local storage. Saves future finished scans, including stopped scans. Private-window scans are excluded. Turning saving off keeps existing history until it expires or you delete it.</p>
+        <label class="search history-search"><span aria-hidden="true">⌕</span><input id="history-search" type="search" placeholder="Find a saved website" aria-label="Search scan history" /></label>
+        <ul id="history-list" class="history-list" aria-label="Saved scans"></ul>
+        <p id="history-empty" class="history-empty">Loading history…</p>
+        <div class="history-footer"><span>Up to 20 scans. Oldest removed when full.</span><button id="history-clear" type="button" disabled>Delete all history</button></div>
+        <p id="history-error" class="notice" role="alert" hidden></p>
+      </details>
       <p id="notice" class="notice" role="alert" hidden></p>
     </main>
 

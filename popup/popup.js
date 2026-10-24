@@ -1,4 +1,5 @@
 import { ExportReview } from "./export-review.js";
+import { HistoryPanel } from "./history.js";
 import { ACTIVE, emptyScan, elapsedTime } from "../lib/crawler.js";
 import { normalizeUrl, sitePattern } from "../lib/urls.js";
 
@@ -12,6 +13,10 @@ let siteAllowed = false;
 let lastContacts = null;
 let lastLogs = null;
 const exportReview = new ExportReview($("export-review"), notice);
+const historyPanel = new HistoryPanel($("history"), {
+  onReview: (entry) => exportReview.open(entry, { saved: true }),
+  onChange: (entries) => exportReview.syncHistory(entries),
+});
 
 function notice(message = "") {
   $("notice").textContent = message;
@@ -209,6 +214,8 @@ chrome.storage.onChanged.addListener((changes, area) => {
     scan = changes.scan.newValue;
     render();
   }
+  if (area === "local" && changes.scanHistory) historyPanel.refresh();
+  if (area === "session" && changes.historyError) historyPanel.warning(changes.historyError.newValue || "");
 });
 chrome.permissions.onRemoved.addListener(() => { checkPermission().then(render).catch(() => {}); });
 chrome.permissions.onAdded.addListener(() => { checkPermission().then(render).catch(() => {}); });
@@ -226,6 +233,8 @@ async function initialize() {
       if ([25, 50, 100, 150].includes(settings.maxPages)) $("page-limit").value = String(settings.maxPages);
     }
     scan = await command("GET_STATE");
+    const { historyError } = await chrome.storage.session.get("historyError");
+    if (historyError) historyPanel.warning(historyError);
     await checkPermission();
   } catch (error) { notice(error.message); }
   finally { busy = false; render(); }
@@ -233,3 +242,4 @@ async function initialize() {
 
 setInterval(renderClock, 250);
 initialize();
+historyPanel.refresh();

@@ -1,8 +1,15 @@
 import { Crawler, ACTIVE } from "./lib/crawler.js";
 import { fetchPublicPage } from "./lib/network.js";
 import { sitePattern } from "./lib/urls.js";
+import { ScanHistory } from "./lib/history.js";
 
 const ALARM = "contacthunter-checkpoint";
+const HISTORY_ALARM = "contacthunter-history-expiry";
+const history = new ScanHistory(chrome.storage.local, async (data) => {
+  if (!data.entries.length) { await chrome.alarms.clear(HISTORY_ALARM); return; }
+  const when = Math.min(...data.entries.map((entry) => Date.parse(entry.expiresAt)));
+  await chrome.alarms.create(HISTORY_ALARM, { when: Math.max(Date.now() + 1000, when) });
+});
 let parserCreation;
 let commandQueue = Promise.resolve();
 
@@ -33,9 +40,18 @@ async function save(state) {
   await chrome.action.setBadgeBackgroundColor({ color: state.status === "paused" ? "#b7791f" : "#087f76" });
   await chrome.action.setBadgeText({ text: running ? String(state.contacts.length || "…") : state.status === "paused" ? "Ⅱ" : "" });
   if (!running) await chrome.alarms.clear(ALARM);
+  try {
+    if (await history.capture(state)) await chrome.storage.session.remove("historyError");
+  } catch (error) {
+    // A full or unavailable history store must never interrupt live scanning.
+    console.error("Could not save scan history:", error);
+    await chrome.storage.session.set({ historyError: `History could not save a scan: ${error.message}` }).catch(console.error);
+  }
 }
 
 const ready = (async () => {
+  await chrome.storage.local.setAccessLevel({ accessLevel: "TRUSTED_CONTEXTS" });
+  history.list().catch(console.error);
   const { scan } = await chrome.storage.session.get("scan");
   const crawler = new Crawler({
     save, fetchPage: fetchPublicPage, parsePage,
@@ -48,6 +64,18 @@ const ready = (async () => {
   return crawler;
 })();
 
+async function handleMessage(message) {
+  await ready;
+  switch (message.type) {
+    case "HISTORY_LIST": return { history: await history.list() };
+    case "HISTORY_SETTINGS": return { history: await history.configure({ enabled: message.enabled, retentionDays: message.retentionDays }) };
+    case "HISTORY_OPEN": return { entry: await history.get(message.id) };
+    case "HISTORY_DELETE": return { history: await history.delete(message.id) };
+    case "HISTORY_CLEAR": return { history: await history.clear() };
+    default: return { scan: await handleCommand(message) };
+  }
+}
+
 async function handleCommand(message) {
   const crawler = await ready;
   switch (message.type) {
@@ -55,7 +83,7 @@ async function handleCommand(message) {
     case "START": {
       const tab = await chrome.tabs.get(message.tabId);
       if (!tab.url || new URL(tab.url).origin !== message.origin) throw new Error("The selected tab changed. Reopen ContactHunter and try again.");
-      const state = await crawler.start({ url: tab.url, durationSeconds: message.durationSeconds, maxPages: message.maxPages });
+      const state = await crawler.start({ url: tab.url, durationSeconds: message.durationSeconds, maxPages: message.maxPages, incognito: !!tab.incognito });
       await chrome.alarms.create(ALARM, { periodInMinutes: 0.5 });
       return state;
     }
@@ -80,15 +108,18 @@ async function handleCommand(message) {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // Only the packaged popup may control scans; parsed websites never have this API.
   if (message?.target !== "background" || sender.id !== chrome.runtime.id || sender.url !== chrome.runtime.getURL("popup/popup.html")) return;
-  const task = commandQueue.catch(() => {}).then(() => handleCommand(message));
+  const task = commandQueue.catch(() => {}).then(() => handleMessage(message));
   commandQueue = task;
-  task.then((scan) => sendResponse({ ok: true, scan }), (error) => sendResponse({ ok: false, error: error.message }));
+  task.then((result) => sendResponse({ ok: true, ...result }), (error) => sendResponse({ ok: false, error: error.message }));
   return true;
 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === ALARM) ready.then((crawler) => crawler.kick()).catch(console.error);
+  if (alarm.name === HISTORY_ALARM) history.list().catch(console.error);
 });
+
+chrome.runtime.onStartup.addListener(() => { history.list().catch(console.error); });
 
 chrome.permissions.onRemoved.addListener(() => {
   const task = commandQueue.catch(() => {}).then(async () => {
