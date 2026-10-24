@@ -1,84 +1,256 @@
 # ContactHunter
 
-A Chrome Manifest V3 extension that discovers publicly published email addresses and phone numbers across a website. Built with JavaScript, HTML, and CSS, with no dependencies or build step.
+- A Chrome extension for discovering publicly available email addresses and phone numbers on websites.
+- Crawls eligible internal pages for a selected duration, removes duplicate contacts, and displays results as scanning progresses.
+- Includes export review, CSV downloads, and optional local scan history.
+- Built with Chrome Manifest V3, JavaScript, HTML, and CSS.
+- Runs locally without a backend, API keys, external services, or a build step.
 
-## Install
+## Features
 
-1. Open `chrome://extensions` in Chrome 120 or later.
-2. Enable **Developer mode**.
-3. Select **Load unpacked** and choose this folder, containing `manifest.json`.
-4. Pin **ContactHunter** from the extensions menu.
+### Website scanning
 
-After changing extension files, click **Reload** on its extension card and reopen the popup.
+- Start a scan from the website open in your active tab.
+- Automatically discover links and crawl eligible pages on the same origin: scheme, hostname, and port.
+- Prioritize likely contact pages, including contact, about, team, support, legal, and similar URLs.
+- Choose a scan duration of **30 seconds, 1 minute, 2 minutes, 5 minutes, or 10 minutes**.
+- Choose a page limit of **25, 50, 100, or 150 pages**.
+- Use **2 minutes** and **100 pages** as the default settings.
+- Save duration and page-limit preferences for future use.
+- Run one scan at a time.
+- Continue scanning when the popup closes.
+- Save crawl checkpoints in session storage and recover work after service-worker suspension.
+- Finish automatically when the duration expires, the page/contact limit is reached, eligible pages run out, or an access restriction stops the scan.
 
-## Use
+### Scan controls
 
-1. Visit a public HTTP or HTTPS page on the website you want to scan.
-2. Open ContactHunter and choose a scan duration (30 seconds to 10 minutes) and page limit.
-3. Click **Start scanning** and grant Chrome access to that website if prompted.
-4. Watch emails, phone numbers, page counts, and scan activity update live.
-5. **Pause** cancels the in-flight request and freezes the remaining scan time. **Resume** continues the queue. **Stop** ends the scan and retains its results.
-6. Search or filter contacts, copy individual values, or select **Review export** to open the export review. Uncheck unwanted contacts, search or filter the review, and use **Select matching**, **Select all**, or **Clear selection** to adjust the download. All captured contacts can be reviewed in pages of 50, including their retained source URLs. **Show selected only** previews the included contacts.
-7. Select **Download CSV** to export only the checked contacts. The review shows both the unique contact count and the CSV row count (one row per source). **Cancel** or Escape closes review without downloading or deleting results.
+- **Start scanning:** check website restrictions and begin collecting public contacts.
+- **Pause scan:** cancel the current request, preserve the queue, and freeze the remaining scan time.
+- **Resume scan:** continue a paused scan from its saved queue.
+- **Stop:** end scanning and retain the contacts collected so far.
+- **Clear results:** stop active work and remove the current session's contacts and scan activity.
+- **Revoke access:** stop scanning and remove the extension's permission for the scanned website.
 
-Export review captures the contacts and sources available when it opens. A live scan can continue, but newer contacts and source updates are excluded from that download; close and reopen review to include them. Selections reset when the review closes. The main results filters do not limit the review's initial snapshot. Clearing results or replacing the scan closes an open review.
+### Live progress and results
 
-The scan continues when you close the popup. Only one scan runs at a time. Starting a new scan replaces previous results. **Clear results** stops an active scan and removes its contacts and activity. **Revoke access** stops the scan and removes its website permission; existing results remain available for export until cleared.
+- Display the target website and current scan status.
+- Show elapsed time, selected duration, and a progress bar.
+- Display the page currently being processed.
+- Update email, phone, and successfully scanned page counts live.
+- Show queued and skipped page counts.
+- View recent scan activity, skipped-page explanations, access errors, and completion reasons.
+- See scanning or paused status on the extension's toolbar badge.
+- Search discovered contacts by value or source URL.
+- Filter results by **All**, **Emails**, or **Phones**.
+- Copy individual contacts to the clipboard.
+- Open source pages from contact results.
+- Display up to 150 matching contacts in the main list; review all retained contacts through export review.
 
-## Scan history
+### Email detection
 
-Open **Scan history** and turn on **Save finished scans on this device** to retain future finished scans across browser restarts. History is disabled by default. Completed, stopped, blocked, and failed scans are saved with their collected contacts, source URLs, site, timestamp, page counts, and completion reason. In-progress and paused scans are not archived. Incognito scans are never saved to history.
+- Extract email addresses from public page text and `mailto:` links.
+- Decode percent-encoded recipients in mail links.
+- Support multiple mail-link recipients and plus-addressed emails.
+- Normalize email casing for duplicate removal.
+- Reject common malformed addresses and invalid domain formatting.
+- Retain the first discovery timestamp and up to five distinct source URLs per contact.
 
-- Choose automatic deletion after **1, 7, or 30 days**, measured from each scan's finish time. The default is 7 days. Changing retention also updates existing entries and immediately removes entries that are now expired.
-- Search saved websites and choose **Review & export** to view contacts and select a CSV download. Opening history does not replace or interrupt a live scan. A saved scan cannot resume crawling.
-- Use **Delete** on an entry or **Delete all history** to remove saved copies. **Clear results** clears only the current session's results. Turning history saving off stops future saving; existing saved copies remain until expiry or deletion.
-- History is stored locally in this Chrome profile, without cloud sync or uploads. It retains up to **20 scans** within a **4 MiB** budget; oldest entries are removed when either limit is reached. Complete contact sets are preserved rather than silently truncated. A history storage failure is shown without discarding the current scan's results.
-- Expired entries are removed by a scheduled Chrome alarm or on the next history access/startup. Cleanup resumes when Chrome runs again. Deleted or expired saved scans cannot be reopened for export, and their open review is closed when history updates.
+### Phone detection
 
-## Website access and privacy
+- Extract candidates from public text and explicit `tel:` links.
+- Use nearby labels such as phone, mobile, telephone, fax, WhatsApp, and hotline to identify phone-like values.
+- Support labels appearing in a preceding text node or on the previous line.
+- Normalize spaces, hyphens, periods, and parentheses in phone formatting.
+- Recognize `+` and `00` international prefixes.
+- Remove optional `(0)` trunk prefixes for selected international calling codes.
+- Support extensions written with `ext`, `extn`, `extension`, `x`, `#`, or telephone-link `;ext=` parameters.
+- Resolve numeric `phone-context` prefixes in telephone links.
+- Normalize Arabic, Persian, and full-width digits.
+- Apply basic structural checks to international `+1` numbers.
+- Filter common dates, date ranges, IP addresses, URLs, email addresses, repeated-digit values, and labeled numeric identifiers.
+- Require a phone label or telephone link for unformatted local numbers.
+- Deduplicate equivalent normalized phone representations while keeping different extensions distinct.
+- Keep detection entirely offline, without sending contacts to a validation service.
 
-- Permission is requested for the selected website when you start. There is no installation-time access to every website. Chrome host permissions span ports, while the crawler enforces the selected page's exact origin, including its port.
-- Pages are fetched with cookies and credentials omitted, without sending a referrer. The extension reads public HTML responses rather than the contents of your signed-in tab.
-- `robots.txt` is checked before collection. Generic `*` and ContactHunter-specific restrictions are both applied conservatively. Rules support allow/disallow, wildcards, end anchors, and crawl delays. Rules are refreshed after a pause of 15 minutes or longer.
-- A missing `robots.txt` (404 or 410) permits public-page crawling. Other robot-file errors, redirects, oversized rules, or unreachable rules prevent scanning. Redirects on pages are also skipped.
-- Requests run one at a time, at least 1.5 seconds apart, or slower when `Crawl-delay` requires it. HTTP 401, 403, 429, and 503 responses stop the scan.
-- Page-level robots meta tags and `X-Robots-Tag` headers are honored. `noindex`, `noarchive`, `nosnippet`, or `none` prevent contact collection; `nofollow` prevents link discovery. Individual nofollow and download links are skipped.
-- Authentication, account, admin, checkout, and other sensitive URL paths are excluded. Pages containing password fields are skipped. Forms, scripts, frames, templates, and explicitly hidden content are excluded from extraction. Website scripts and assets are never inserted into the extension's live document.
-- No analytics, external API, cloud upload, or server-side contact storage is used. ContactHunter only makes page requests to the selected website. CSV export is user initiated.
+### Review before export
 
-Current contacts, sources, and crawl checkpoints are kept in `chrome.storage.session`, surviving popup closure and service-worker suspension. They are cleared when Chrome restarts or the extension is reloaded, updated, or disabled. Duration and page-limit preferences, history preferences, and any opted-in saved history use persistent `chrome.storage.local`. Local extension storage is restricted to trusted extension contexts. Saved history survives restarts and extension reloads until its retention limit or manual deletion. CSV files you export remain on your device until you remove them.
+- Open **Review export** before downloading a CSV.
+- Review a snapshot of contacts and source URLs captured when the review opens.
+- Select or exclude individual contacts using checkboxes.
+- Search contacts and sources within the review.
+- Filter by email or phone type.
+- Use **Select matching**, **Select all**, or **Clear selection** for bulk changes.
+- Select matching contacts across all review pages, including matches outside the visible page.
+- Use **Show selected only** to inspect the included contacts.
+- Browse all captured contacts in pages of 50.
+- View every retained source URL for each contact.
+- See selected contact counts, email/phone counts, and the resulting CSV row count.
+- Keep incoming contacts and source updates out of an already-open review; reopen it to capture newer results.
+- Cancel or press Escape to leave the review without downloading.
+- Reset the selection when the review closes; exclusions affect the download rather than deleting collected contacts.
 
-Public availability is not permission for unrestricted reuse. Use ContactHunter only where you are authorized to collect information, and respect website terms and applicable privacy obligations. Access checks are technical safeguards; the extension does not determine consent or legal permission to use a contact.
+### CSV export
 
-## Scope and limits
+- Download only the contacts checked in export review.
+- Include **Type**, **Value**, **Source URL**, and **Found at (UTC)** columns.
+- Write one row for each retained source URL, so a contact with multiple sources has multiple rows.
+- Export UTF-8 CSV with a byte-order mark and CRLF line endings.
+- Escape quotes and delimiters in CSV fields.
+- Prefix formula-like values with an apostrophe for spreadsheet safety.
+- Generate filenames containing the website hostname and export date.
+- Create downloads locally using browser Blob URLs, without an export server.
 
-- Scans the selected origin, without visiting subdomains or external websites.
-- Crawls linked public HTML. It does not execute JavaScript, submit forms, discover unlinked pages, bypass authentication/CAPTCHAs, parse PDFs, or decode deliberately obscured contacts. CSS-based visibility beyond explicit hidden attributes and inline styles is not evaluated.
-- Only `page`, `p`, `lang`, and `hl` query parameters are accepted. Common tracking parameters and fragments are removed; other query-string URLs are excluded to avoid private tokens and crawler traps.
-- Email matching is case insensitive and supports common ASCII addresses. Phone detection uses formatting and nearby phone labels, excludes common dates, IP addresses, URLs, email addresses, and labeled identifiers, and accepts explicit `tel:` links. It supports `+`/`00` international prefixes, common optional `(0)` trunk prefixes, extensions, numeric telephone-link contexts, and Arabic/Persian/full-width digits. Unformatted local numbers require a phone label or telephone link. Country codes are not guessed for local numbers. These offline checks do not verify every national numbering plan or whether a number is assigned or reachable; review candidates before use.
-- Each scan checks at most 150 pages, discovers at most 500 URLs, and retains at most 1,000 unique contacts with up to 5 distinct source pages each. Page responses are limited to 2 MiB and robots files to 512 KiB; individual requests time out after 12 seconds or when scan time expires.
-- The main results list displays up to 150 contacts matching the current filter. Export review provides access to all captured contacts and exports only selected contacts, with one row per retained source URL. Formula-like values are prefixed with an apostrophe for spreadsheet safety.
-- A scan may finish before its selected duration if eligible pages run out or a limit or access restriction is reached.
+### Optional scan history
+
+- Keep history **disabled by default**.
+- Enable **Save finished scans on this device** to retain future finished scans.
+- Save completed, stopped, blocked, and failed scans with their available contacts.
+- Store site details, finish time, completion reason, duration, page counts, contacts, and source URLs.
+- Preserve saved history across Chrome restarts and extension reloads.
+- Search history by website or scan status.
+- Open saved contacts with **Review & export** without replacing the live scan.
+- Choose automatic deletion after **1, 7, or 30 days**; the default is **7 days**.
+- Apply retention changes to existing entries and remove entries that are now expired.
+- Delete a single saved scan or use **Delete all history**.
+- Retain up to **20 scans** within a **4 MiB** history budget, removing the oldest entries when full.
+- Preserve complete saved contact sets rather than silently truncating them.
+- Exclude incognito scans from saved history.
+- Show history-saving errors while keeping the current scan's results available.
+- Stop future saving when history is disabled; existing entries remain until expiry or deletion.
+
+### Interface and accessibility
+
+- Use a compact, light-themed popup with clear scan controls and contact statistics.
+- Review exports in a native modal dialog.
+- Provide labeled controls, keyboard focus styles, live status messages, and accessible progress indicators.
+- Respect reduced-motion preferences for interface animations.
+- Show explanatory empty states and user-facing error messages.
+
+## Technologies used
+
+- **JavaScript ES modules:** extension logic, crawling, extraction, state handling, and UI interactions.
+- **HTML5:** popup, export-review dialog, history controls, and offscreen document.
+- **CSS3:** layouts, styling, progress indicators, dialog presentation, and reduced-motion support.
+- **Chrome Manifest V3:** extension configuration and service-worker background execution.
+- **Chrome Runtime API:** communication between the popup, service worker, and offscreen parser.
+- **Chrome Tabs API:** identify the active website and validate the target tab.
+- **Chrome Permissions API:** request and revoke website access at runtime.
+- **Chrome Storage API:** session checkpoints, saved preferences, and optional local history.
+- **Chrome Alarms API:** crawler recovery and scheduled history cleanup.
+- **Chrome Offscreen API:** provide a hidden DOM-capable document for HTML parsing.
+- **Chrome Action API:** toolbar popup and scan-status badges.
+- **Fetch API and readable streams:** retrieve public HTML with response-size limits.
+- **AbortController and AbortSignal:** interrupt requests on pause/stop and enforce request deadlines.
+- **DOM APIs and inert HTML templates:** parse fetched HTML without inserting website content into the live extension document.
+- **Regular expressions, Unicode normalization, Map, and Set:** detect, normalize, and deduplicate contacts.
+- **Clipboard API:** copy individual contacts.
+- **Blob and object URLs:** generate local CSV downloads.
+- **Node.js and npm:** optional development tooling for JavaScript syntax checks.
+- **Runtime dependencies:** none.
+
+## Installation
+
+1. Download or clone this project to your computer.
+2. Open `chrome://extensions` in **Chrome 120 or later**.
+3. Enable **Developer mode**.
+4. Click **Load unpacked**.
+5. Select the project folder containing `manifest.json`.
+6. Pin **ContactHunter** from Chrome's extensions menu.
+
+- No `npm install`, compilation, API key, account, or backend setup is required.
+- After editing extension files, click **Reload** on the extension card and reopen the popup.
+
+## Usage
+
+1. Open a public HTTP or HTTPS page on the website you want to scan.
+2. Open ContactHunter, choose a duration and page limit, and click **Start scanning**.
+3. Grant website access if Chrome prompts for it.
+4. Monitor results and use Pause, Resume, or Stop as needed.
+5. Click **Review export**, check the contacts to include, and choose **Download CSV**.
+6. Optionally open **Scan history** and enable saving for future finished scans.
+
+## Website restrictions and privacy
+
+- Request access to the selected website when the user starts scanning; broad optional host patterns are not granted automatically at installation.
+- Enforce the selected page's exact origin in the crawler, even though Chrome host permissions span ports.
+- Fetch pages without cookies or credentials and without sending a referrer.
+- Read public HTML responses rather than extracting content from the user's signed-in tab.
+- Check `robots.txt` before scanning and conservatively apply both generic and ContactHunter-specific restrictions.
+- Support robots allow/disallow rules, wildcards, end anchors, and crawl delays.
+- Permit public-page scanning when `robots.txt` returns 404 or 410; stop when other errors or redirects prevent verification.
+- Refresh crawl rules after a pause of 15 minutes or longer.
+- Send one request at a time, at least 1.5 seconds apart, or slower when crawl-delay rules require it.
+- Stop on HTTP 401, 403, 429, or 503 responses.
+- Skip redirects rather than following them into another location.
+- Honor page robots meta tags and `X-Robots-Tag` headers.
+- Prevent collection for `noindex`, `noarchive`, `nosnippet`, or `none`; prevent link discovery for `nofollow`.
+- Skip individual nofollow/download links and sensitive authentication, account, admin, checkout, and similar URL paths.
+- Skip pages containing password fields.
+- Exclude forms, scripts, frames, templates, and explicitly hidden content from extraction.
+- Use trusted extension contexts for persistent extension storage.
+- Make no analytics, cloud-sync, external validation, or contact-upload requests.
+- Require user action to export contacts.
+- Use ContactHunter only where collection is authorized, and respect website terms and applicable privacy obligations. Technical restrictions do not determine permission to reuse a contact.
+
+## Storage and retention
+
+- **Session storage:** current scan, contacts, sources, activity, and crawl checkpoints; survives popup closure and service-worker suspension.
+- **Session cleanup:** current scan data clears when Chrome restarts or the extension is reloaded, updated, or disabled.
+- **Persistent local storage:** duration/page-limit preferences, history settings, and saved scans when history is enabled.
+- **History expiry:** scheduled cleanup or the next history access/startup removes expired entries; cleanup resumes when Chrome runs again.
+- **Clear results:** removes current session results; use history deletion controls to remove saved copies.
+- **Paused scans:** remain in the current browser session and are not archived as finished history.
+- **Saved scans:** can be reviewed/exported but cannot resume crawling.
+- **Exported CSV files:** remain on your device until you remove them separately.
+
+## Limits and known limitations
+
+- **Scan duration:** 30 seconds to 10 minutes; robots checks and request delays count toward active scan time.
+- **Pages checked:** up to 150 per scan.
+- **Discovered URLs:** up to 500 per scan.
+- **Unique contacts:** up to 1,000 per scan.
+- **Sources per contact:** up to 5 distinct URLs.
+- **Main results display:** up to 150 matching contacts; export review can access the full retained set.
+- **Export review:** 50 contacts per page.
+- **HTML response size:** up to 2 MiB per page.
+- **Robots response size:** up to 512 KiB.
+- **Request timeout:** up to 12 seconds, or the remaining scan time if shorter.
+- **History capacity:** up to 20 scans within 4 MiB.
+- **Crawl scope:** linked pages on the selected origin; external sites, other subdomains, and unlinked pages are excluded.
+- **Query parameters:** allow `page`, `p`, `lang`, and `hl`; strip common tracking parameters and fragments; exclude other query-string URLs.
+- **Content scope:** public HTML only; JavaScript-rendered contacts, PDFs, and other documents are not processed.
+- **Protected content:** no login, CAPTCHA, paywall, or access-control bypass; no form submissions.
+- **Visibility detection:** handles explicit hidden attributes and common inline styles, but does not evaluate external stylesheets or all CSS visibility rules.
+- **Email coverage:** common ASCII addresses; deliberately obscured addresses are not decoded.
+- **Phone accuracy:** offline format/context checks, not comprehensive national numbering-plan or reachability validation; country codes are not guessed for local numbers.
+- **Review freshness:** a review is a snapshot; reopen it to include newer contacts and sources.
+- **Browser compatibility:** targets Chrome 120+; Firefox and Safari are not configured.
+- **Verification status:** Chrome installation and UI behavior have not been verified in this development environment.
 
 ## Project structure
 
 ```text
-manifest.json           Extension configuration and permissions
-background.js           Commands, Chrome APIs, checkpoints, and recovery
-content.js              Inert HTML parsing and public-content extraction
-lib/
-  crawler.js            Timed crawl queue and scan controls
-  contacts.js           Contact matching, normalization, and deduplication
-  phones.js             Context-aware phone extraction and formatting checks
-  history.js            Opt-in archives, retention, deletion, and storage limits
-  robots.js             Crawl rules and page directives
-  urls.js               URL normalization and scope restrictions
-  network.js            Bounded, credential-free page fetching
-  csv.js                CSV formatting and formula protection
-offscreen/              Hidden HTML parser document
-popup/                  Interface, live results, history, and export review
+ContactHunter/
+├── manifest.json             Extension metadata, permissions, and security policy
+├── background.js             Chrome API integration and background commands
+├── content.js                Inert public-HTML parsing
+├── package.json              Project metadata and syntax-check command
+├── lib/
+│   ├── contacts.js           Email extraction and contact deduplication
+│   ├── phones.js             Phone extraction, context, and format checks
+│   ├── crawler.js            Crawl queue, timing, and scan controls
+│   ├── network.js            Bounded public-page fetching
+│   ├── robots.js             Crawl rules and page directives
+│   ├── urls.js               URL normalization and crawl scope
+│   ├── csv.js                CSV generation and formula protection
+│   └── history.js            Saved scans, retention, and deletion
+├── offscreen/
+│   ├── offscreen.html        Hidden parser document
+│   └── offscreen.js          Parser messaging
+└── popup/
+    ├── popup.html            Main interface and export dialog
+    ├── popup.css             Popup, review, and history styles
+    ├── popup.js              Main UI and live scan updates
+    ├── export-review.js      Selection and reviewed CSV downloads
+    └── history.js            History settings and saved-scan interface
 ```
-
-To check JavaScript syntax with Node.js installed, run `npm run check`. No package installation is needed. Browser UI and installation behavior have not been verified in this environment.
-
-Implementation references: [Chrome optional permissions](https://developer.chrome.com/docs/extensions/reference/api/permissions), [offscreen documents](https://developer.chrome.com/docs/extensions/reference/api/offscreen), [session storage](https://developer.chrome.com/docs/extensions/reference/api/storage), and [robots exclusion protocol](https://www.rfc-editor.org/rfc/rfc9309.html).
