@@ -42,7 +42,7 @@ Public availability is not permission for unrestricted reuse. Use ContactHunter 
 - Scans the selected origin, without visiting subdomains or external websites.
 - Crawls linked public HTML. It does not execute JavaScript, submit forms, discover unlinked pages, bypass authentication/CAPTCHAs, parse PDFs, or decode deliberately obscured contacts. CSS-based visibility beyond explicit hidden attributes and inline styles is not evaluated.
 - Only `page`, `p`, `lang`, and `hl` query parameters are accepted. Common tracking parameters and fragments are removed; other query-string URLs are excluded to avoid private tokens and crawler traps.
-- Email matching is case insensitive and supports common ASCII addresses. Phone matching normalizes formatting and retains extensions without guessing country codes. Phone candidates can include unrelated numeric identifiers; review results before use.
+- Email matching is case insensitive and supports common ASCII addresses. Phone detection uses formatting and nearby phone labels, excludes common dates, IP addresses, URLs, email addresses, and labeled identifiers, and accepts explicit `tel:` links. It supports `+`/`00` international prefixes, common optional `(0)` trunk prefixes, extensions, numeric telephone-link contexts, and Arabic/Persian/full-width digits. Unformatted local numbers require a phone label or telephone link. Country codes are not guessed for local numbers. These offline checks do not verify every national numbering plan or whether a number is assigned or reachable; review candidates before use.
 - Each scan checks at most 150 pages, discovers at most 500 URLs, and retains at most 1,000 unique contacts with up to 5 distinct source pages each. Page responses are limited to 2 MiB and robots files to 512 KiB; individual requests time out after 12 seconds or when scan time expires.
 - The popup displays up to 150 contacts matching the current filter. CSV includes all retained contacts, regardless of the filter, with one row per retained source URL. Formula-like values are prefixed with an apostrophe for spreadsheet safety.
 - A scan may finish before its selected duration if eligible pages run out or a limit or access restriction is reached.
@@ -56,6 +56,7 @@ content.js              Inert HTML parsing and public-content extraction
 lib/
   crawler.js            Timed crawl queue and scan controls
   contacts.js           Contact matching, normalization, and deduplication
+  phones.js             Context-aware phone extraction and formatting checks
   robots.js             Crawl rules and page directives
   urls.js               URL normalization and scope restrictions
   network.js            Bounded, credential-free page fetching
