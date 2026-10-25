@@ -51,6 +51,8 @@
 - Extract email addresses from public page text and `mailto:` links.
 - Decode percent-encoded recipients in mail links.
 - Support multiple mail-link recipients and plus-addressed emails.
+- Read `to`, `cc`, and `bcc` recipients from mail links.
+- Recognize inline email fragments, common `[at]`/`[dot]` spellings, and public Cloudflare email markup.
 - Normalize email casing for duplicate removal.
 - Reject common malformed addresses and invalid domain formatting.
 - Retain the first discovery timestamp and up to five distinct source URLs per contact.
@@ -68,8 +70,9 @@
 - Normalize Arabic, Persian, and full-width digits.
 - Apply basic structural checks to international `+1` numbers.
 - Filter common dates, date ranges, IP addresses, URLs, email addresses, repeated-digit values, and labeled numeric identifiers.
-- Require a phone label or telephone link for unformatted local numbers.
+- Recognize common ten-digit local numbers without a label; require phone context for other unformatted local numbers.
 - Deduplicate equivalent normalized phone representations while keeping different extensions distinct.
+- Match local and international representations when an explicit country code supplies an unambiguous match.
 - Keep detection entirely offline, without sending contacts to a validation service.
 
 ### Review before export
@@ -93,7 +96,7 @@
 
 - Download only the contacts checked in export review.
 - Include **Type**, **Value**, **Source URL**, and **Found at (UTC)** columns.
-- Write one row for each retained source URL, so a contact with multiple sources has multiple rows.
+- Write one row per contact, retaining every distinct source URL in the source field on separate lines.
 - Export UTF-8 CSV with a byte-order mark and CRLF line endings.
 - Escape quotes and delimiters in CSV fields.
 - Prefix formula-like values with an apostrophe for spreadsheet safety.
@@ -186,7 +189,7 @@
 - Prevent collection for `noindex`, `noarchive`, `nosnippet`, or `none`; prevent link discovery for `nofollow`.
 - Skip individual nofollow/download links and sensitive authentication, account, admin, checkout, and similar URL paths.
 - Skip pages containing password fields.
-- Exclude forms, scripts, frames, templates, and explicitly hidden content from extraction.
+- Exclude form fields, scripts, frames, templates, and explicitly hidden content from extraction; visible contact text inside forms remains eligible.
 - Use trusted extension contexts for persistent extension storage.
 - Make no analytics, cloud-sync, external validation, or contact-upload requests.
 - Require user action to export contacts.
@@ -221,7 +224,7 @@
 - **Content scope:** public HTML only; JavaScript-rendered contacts, PDFs, and other documents are not processed.
 - **Protected content:** no login, CAPTCHA, paywall, or access-control bypass; no form submissions.
 - **Visibility detection:** handles explicit hidden attributes and common inline styles, but does not evaluate external stylesheets or all CSS visibility rules.
-- **Email coverage:** common ASCII addresses; deliberately obscured addresses are not decoded.
+- **Email coverage:** common ASCII addresses, common bracketed `at`/`dot` spellings, and public Cloudflare markup; arbitrary JavaScript obfuscation is not executed.
 - **Phone accuracy:** offline format/context checks, not comprehensive national numbering-plan or reachability validation; country codes are not guessed for local numbers.
 - **Review freshness:** a review is a snapshot; reopen it to include newer contacts and sources.
 - **Browser compatibility:** targets Chrome 120+; Firefox and Safari are not configured.

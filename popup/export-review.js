@@ -101,9 +101,8 @@ export class ExportReview {
   renderSummary(matches = this.matches()) {
     const selected = this.contacts.filter((contact) => this.selected.has(keyOf(contact)));
     const emails = selected.filter((contact) => contact.type === "email").length;
-    const rows = selected.reduce((count, contact) => count + contact.sources.length, 0);
     this.$("selected-count").textContent = `${selected.length} of ${this.contacts.length} selected`;
-    this.$("breakdown").textContent = `${emails} emails · ${selected.length - emails} phones · ${rows} CSV rows`;
+    this.$("breakdown").textContent = `${emails} emails · ${selected.length - emails} phones · ${selected.length} CSV rows`;
     this.$("download").textContent = `Download CSV (${selected.length})`;
     this.$("download").disabled = selected.length === 0;
     this.$("select-all").disabled = selected.length === this.contacts.length;
@@ -150,8 +149,7 @@ export class ExportReview {
       type.className = "review-contact-type";
       type.textContent = contact.type === "email" ? "Email" : "Phone";
       info.append(label, type);
-      // Every retained source is available to review, including CSV rows beyond
-      // the first source shown in the main results list.
+      // Every retained source is available to review and included in the CSV.
       for (const source of contact.sources) {
         const link = document.createElement("a");
         link.href = source;
