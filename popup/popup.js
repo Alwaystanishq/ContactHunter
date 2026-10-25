@@ -4,6 +4,11 @@ import { ACTIVE, emptyScan, elapsedTime } from "../lib/crawler.js";
 import { normalizeUrl, sitePattern } from "../lib/urls.js";
 
 const $ = (id) => document.getElementById(id);
+const CONTACT_ICONS = {
+  email: '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m3 7 9 6 9-6"/>',
+  phone: '<path d="M7 3H4a1 1 0 0 0-1 1c0 9.4 7.6 17 17 17a1 1 0 0 0 1-1v-3l-5-2-2 2a14 14 0 0 1-7-7l2-2z"/>',
+  address: '<path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',
+};
 let scan = emptyScan();
 let activeTab = null;
 let selectedOrigin = "";
@@ -52,7 +57,9 @@ function renderContacts(force = false) {
     const row = document.createElement("li");
     const icon = document.createElement("span");
     icon.className = `contact-type ${contact.type}`;
-    icon.textContent = { email: "@", phone: "☎", address: "⌂" }[contact.type];
+    // Only fixed application icons enter this markup; contact values use textContent.
+    icon.innerHTML = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${CONTACT_ICONS[contact.type] || ""}</svg>`;
+    icon.setAttribute("role", "img");
     icon.setAttribute("aria-label", { email: "Email", phone: "Phone", address: "Address" }[contact.type]);
     const info = document.createElement("div");
     info.className = "contact-info";
@@ -87,10 +94,10 @@ function renderContacts(force = false) {
   $("empty").hidden = contacts.length > 0;
   const heading = $("empty").querySelector("h3");
   const description = $("empty").querySelector("p");
-  heading.textContent = scan.contacts.length ? "No matching contacts" : ACTIVE.has(scan.status) ? "Following the trail…" : "Your next connection starts here";
+  heading.textContent = scan.contacts.length ? "No matching contacts" : ACTIVE.has(scan.status) ? "Scanning…" : "No contacts yet";
   description.textContent = scan.contacts.length ? "Try another search or contact type." : ACTIVE.has(scan.status)
-    ? "Public emails, phone numbers, and postal addresses will appear here as we find them."
-    : scan.status === "idle" ? "Start a scan to find public emails, phone numbers, and postal addresses. Your discoveries will appear as we find them."
+    ? "Contacts appear here as they’re found."
+    : scan.status === "idle" ? "Start a scan to find emails, phones, and addresses."
       : "No contacts collected. Check scan activity for skipped pages or try another public website.";
   $("result-summary").hidden = !contacts.length;
   $("result-summary").textContent = `${Math.min(contacts.length, 150)} of ${contacts.length} matching contacts · Duplicates removed${contacts.length > 150 ? " · Review export to see all" : ""}`;

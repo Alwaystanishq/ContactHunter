@@ -3,30 +3,30 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="dark" />
     <title>ContactHunter</title>
     <link rel="stylesheet" href="popup.css" />
     <script type="module" src="popup.js"></script>
   </head>
   <body>
     <header class="header">
-      <div class="brand"><span class="brand-icon" aria-hidden="true">c<span></span></span><div><h1>ContactHunter</h1><p>A little discovery goes a long way.</p></div></div>
+      <div class="brand"><span class="brand-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3"/><circle cx="12" cy="12" r="4"/></svg></span><h1>Contact<span>Hunter</span></h1></div>
       <span id="status-badge" class="badge" data-status="idle"><i></i><span>Ready</span></span>
     </header>
 
     <main>
       <section class="scan-card" aria-label="Scan controls">
-        <div class="site-heading"><span class="label">TARGET WEBSITE</span><span class="public-tag"><span aria-hidden="true">◇</span> Public pages only</span></div>
-        <div class="site"><span class="site-icon" aria-hidden="true">◎</span><div><h2 id="site-name">Finding your active tab…</h2><p id="site-url">Open a website to begin</p></div></div>
+        <div class="site-heading"><span class="label">Target website</span><span class="public-tag"><i aria-hidden="true"></i> Public pages only</span></div>
+        <div class="site"><h2 id="site-name">Finding your active tab…</h2><p id="site-url">Open a website to begin</p></div>
         <div class="settings">
           <label>Scan duration<select id="duration"><option value="30">30 seconds</option><option value="60">1 minute</option><option value="120" selected>2 minutes</option><option value="300">5 minutes</option><option value="600">10 minutes</option></select></label>
           <label>Page limit<select id="page-limit"><option value="25">25 pages</option><option value="50">50 pages</option><option value="100" selected>100 pages</option><option value="150">150 pages</option></select></label>
         </div>
         <div class="controls">
-          <button id="start" class="primary" disabled><span aria-hidden="true">▷</span> Start scanning</button>
-          <button id="pause" class="primary" hidden><span aria-hidden="true">Ⅱ</span> Pause scan</button>
-          <button id="resume" class="primary" hidden><span aria-hidden="true">▷</span> Resume scan</button>
-          <button id="stop" class="secondary" hidden><span aria-hidden="true">□</span> Stop</button>
+          <button id="start" class="primary" disabled><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 10 7-10 7z"/></svg>Start scan</button>
+          <button id="pause" class="primary" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>Pause scan</button>
+          <button id="resume" class="primary" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 10 7-10 7z"/></svg>Resume scan</button>
+          <button id="stop" class="secondary" hidden>Stop</button>
         </div>
         <div id="progress-section" class="progress-section" hidden>
           <div class="progress-label"><span id="progress-label">Scanning</span><span id="timer">0:00 / 2:00</span></div>
@@ -37,16 +37,16 @@
       </section>
 
       <section class="metrics" aria-label="Scan statistics">
-        <div><span id="email-count">0</span><p><span class="metric-icon" aria-hidden="true">@</span> Emails found</p></div>
-        <div><span id="phone-count">0</span><p><span class="metric-icon" aria-hidden="true">⌕</span> Phone numbers</p></div>
-        <div><span id="address-count">0</span><p><span class="metric-icon" aria-hidden="true">⌂</span> Addresses</p></div>
-        <div><span id="page-count">0</span><p><span class="metric-icon" aria-hidden="true">▤</span> Pages scanned</p></div>
+        <div><span id="email-count">0</span><p>Emails</p></div>
+        <div><span id="phone-count">0</span><p>Phones</p></div>
+        <div><span id="address-count">0</span><p>Addresses</p></div>
+        <div><span id="page-count">0</span><p>Pages scanned</p></div>
       </section>
 
       <section class="results" aria-labelledby="results-heading">
-        <div class="results-heading"><h2 id="results-heading">Discovered contacts <span id="total-count">0</span></h2><button id="export" class="export" disabled><span aria-hidden="true">↓</span> Review export</button></div>
-        <div class="result-toolbar"><div class="filters" role="group" aria-label="Filter contacts"><button data-filter="all" aria-pressed="true">All</button><button data-filter="email" aria-pressed="false">Emails</button><button data-filter="phone" aria-pressed="false">Phones</button><button data-filter="address" aria-pressed="false">Addresses</button></div><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search contacts" aria-label="Search contacts" /></label></div>
-        <div id="empty" class="empty"><div class="empty-icon" aria-hidden="true"><span>⌕</span><i></i><b></b></div><h3>Your next connection starts here</h3><p>Start a scan to find public emails, phone numbers, and postal addresses.<br />Your discoveries will appear as we find them.</p></div>
+        <div class="results-heading"><h2 id="results-heading">Contacts <span id="total-count">0</span></h2><button id="export" class="export" disabled><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 16v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg>Review export</button></div>
+        <div class="result-toolbar"><div class="filters" role="group" aria-label="Filter contacts"><button data-filter="all" aria-pressed="true">All</button><button data-filter="email" aria-pressed="false">Emails</button><button data-filter="phone" aria-pressed="false">Phones</button><button data-filter="address" aria-pressed="false">Addresses</button></div><label class="search"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="search" type="search" placeholder="Search contacts…" aria-label="Search contacts or sources" /></label></div>
+        <div id="empty" class="empty"><span class="empty-mark" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5M8 16h3"/></svg></span><div><h3>No contacts yet</h3><p>Start a scan to find emails, phones, and addresses.</p></div></div>
         <ul id="contact-list" class="contact-list" aria-label="Discovered contacts"></ul>
         <p id="result-summary" class="result-summary" hidden></p>
       </section>
@@ -58,8 +58,8 @@
           <label class="history-toggle"><input id="history-enabled" type="checkbox" disabled /> Save finished scans on this device</label>
           <label class="history-retention">Auto-delete after<select id="history-retention" disabled><option value="1">1 day</option><option value="7" selected>7 days</option><option value="30">30 days</option></select></label>
         </div>
-        <p class="history-description">Optional, local storage. Saves future finished scans, including stopped scans. Private-window scans are excluded. Turning saving off keeps existing history until it expires or you delete it.</p>
-        <label class="search history-search"><span aria-hidden="true">⌕</span><input id="history-search" type="search" placeholder="Find a saved website" aria-label="Search scan history" /></label>
+        <p class="history-description">Saved on this device. Private windows are excluded. Turning saving off keeps existing scans until expiry or deletion.</p>
+        <label class="search history-search"><input id="history-search" type="search" placeholder="Find a saved website…" aria-label="Search scan history" /></label>
         <ul id="history-list" class="history-list" aria-label="Saved scans"></ul>
         <p id="history-empty" class="history-empty">Loading history…</p>
         <div class="history-footer"><span>Up to 20 scans. Oldest removed when full.</span><button id="history-clear" type="button" disabled>Delete all history</button></div>
@@ -68,14 +68,14 @@
       <p id="notice" class="notice" role="alert" hidden></p>
     </main>
 
-    <footer><span><i aria-hidden="true"></i> On-device. No cookies. No uploads.</span><div><button id="clear" disabled>Clear results</button><button id="revoke" disabled>Revoke access</button></div></footer>
+    <footer><span>On-device · No uploads</span><div><button id="clear" disabled>Clear results</button><button id="revoke" disabled>Revoke access</button></div></footer>
 
     <dialog id="export-review" aria-labelledby="review-heading" aria-describedby="review-description">
-      <div class="review-heading"><div><span class="label">EXPORT REVIEW</span><h2 id="review-heading">Choose your contacts</h2></div><button id="review-close" class="review-close" type="button" aria-label="Close export review">×</button></div>
+      <div class="review-heading"><h2 id="review-heading">Choose your contacts</h2><button id="review-close" class="review-close" type="button" aria-label="Close export review">×</button></div>
       <p id="review-description" class="review-description">Uncheck contacts to exclude them from this download. Your scan results stay available.</p>
       <div class="review-totals"><strong id="review-selected-count">0 selected</strong><span id="review-breakdown"></span></div>
       <p id="review-snapshot" class="review-snapshot" role="status"></p>
-      <div class="review-tools"><label class="search"><span aria-hidden="true">⌕</span><input id="review-search" type="search" placeholder="Search contacts or sources" aria-label="Search contacts for export" /></label><label class="review-type-label"><span class="sr-only">Contact type</span><select id="review-type"><option value="all">All types</option><option value="email">Emails</option><option value="phone">Phones</option><option value="address">Addresses</option></select></label></div>
+      <div class="review-tools"><label class="search"><input id="review-search" type="search" placeholder="Search contacts or sources…" aria-label="Search contacts for export" /></label><label class="review-type-label"><span class="sr-only">Contact type</span><select id="review-type"><option value="all">All types</option><option value="email">Emails</option><option value="phone">Phones</option><option value="address">Addresses</option></select></label></div>
       <div class="review-bulk"><label><input id="review-matching" type="checkbox" /><span id="review-matching-label">Select matching contacts</span></label><div><button id="review-select-all" type="button">Select all</button><button id="review-clear-selection" type="button">Clear selection</button></div></div>
       <label class="review-selected-only"><input id="review-selected-only" type="checkbox" /> Show selected only</label>
       <div id="review-scroll" class="review-scroll"><ul id="review-list" class="review-list" aria-label="Contacts to review"></ul><p id="review-empty" class="review-empty" hidden>No matching contacts. Try another filter.</p></div>

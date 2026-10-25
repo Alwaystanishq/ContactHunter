@@ -133,7 +133,7 @@
 
 ### Interface and accessibility
 
-- Use a compact, light-themed popup with clear scan controls and contact statistics.
+- Use a minimal dark popup with a soft lavender accent, consistent line icons, compact filters, and matching export and history views.
 - Review exports in a native modal dialog.
 - Provide labeled controls, keyboard focus styles, live status messages, and accessible progress indicators.
 - Respect reduced-motion preferences for interface animations.
