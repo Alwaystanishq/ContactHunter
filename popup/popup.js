@@ -41,8 +41,27 @@ function formatTime(ms) {
 
 function renderClock() {
   const elapsed = elapsedTime(scan);
-  $("timer").textContent = `${formatTime(elapsed)} / ${formatTime(scan.durationMs)}`;
-  $("progress").value = scan.status === "completed" ? 100 : elapsed / scan.durationMs * 100;
+  $("timer").textContent = scan.durationMs === null ? `${formatTime(elapsed)} elapsed` : `${formatTime(elapsed)} / ${formatTime(scan.durationMs)}`;
+  const total = scan.maxPages ?? (scan.visited.length + scan.queue.length);
+  const progress = scan.durationMs !== null ? elapsed / scan.durationMs : total ? scan.visited.length / total : 0;
+  $("progress").value = scan.status === "completed" ? 100 : Math.min(100, progress * 100);
+  $("progress").setAttribute("aria-label", scan.durationMs !== null ? "Scan duration progress" : scan.maxPages !== null ? "Page limit progress" : "Discovered page progress");
+}
+
+function scanOptions() {
+  return {
+    durationSeconds: $("duration").value ? Number($("duration").value) : null,
+    maxPages: $("page-limit").value ? Number($("page-limit").value) : null,
+  };
+}
+
+function renderOptions() {
+  const { durationSeconds, maxPages } = scanOptions();
+  const limits = [];
+  if (durationSeconds !== null) limits.push($("duration").selectedOptions[0].textContent);
+  if (maxPages !== null) limits.push(`${maxPages} pages`);
+  $("scan-options-label").textContent = limits.length ? limits.join(" · ") : "Whole website";
+  $("start-label").textContent = limits.length ? "Start limited scan" : "Scan whole website";
 }
 
 function renderContacts(force = false) {
@@ -143,9 +162,10 @@ function render() {
   $("duration").disabled = busy || locked;
   $("page-limit").disabled = busy || locked;
   if (locked) {
-    $("duration").value = String(scan.durationMs / 1000);
-    $("page-limit").value = String(scan.maxPages);
+    $("duration").value = scan.durationMs === null ? "" : String(scan.durationMs / 1000);
+    $("page-limit").value = scan.maxPages === null ? "" : String(scan.maxPages);
   }
+  renderOptions();
   $("export").disabled = busy || !scan.contacts.length;
   $("clear").disabled = busy || scan.status === "idle";
   $("revoke").disabled = busy || !siteAllowed;
@@ -190,15 +210,16 @@ $("start").addEventListener("click", async () => {
   notice();
   render();
   try {
-    if (!await permission) throw new Error("Website access was not granted. Click Start scanning to try again.");
-    const durationSeconds = Number($("duration").value);
-    const maxPages = Number($("page-limit").value);
-    await chrome.storage.local.set({ settings: { durationSeconds, maxPages } });
+    if (!await permission) throw new Error("Website access was not granted. Click the scan button to try again.");
+    const { durationSeconds, maxPages } = scanOptions();
+    await chrome.storage.local.set({ settings: { version: 2, durationSeconds, maxPages } });
     scan = await command("START", { tabId: activeTab.id, origin: selectedOrigin, durationSeconds, maxPages });
     await checkPermission();
   } catch (error) { notice(error.message); }
   finally { busy = false; render(); }
 });
+
+for (const id of ["duration", "page-limit"]) $(id).addEventListener("change", renderOptions);
 
 for (const [id, type] of [["pause", "PAUSE"], ["resume", "RESUME"], ["stop", "STOP"], ["clear", "CLEAR"], ["revoke", "REVOKE"]]) {
   $(id).addEventListener("click", () => act(type, { origin: selectedOrigin }));
@@ -236,9 +257,12 @@ async function initialize() {
       if (normalizeUrl(tab.url, tab.url, origin)) { activeTab = tab; selectedOrigin = origin; }
     }
     const { settings } = await chrome.storage.local.get("settings");
-    if (settings) {
+    // Old settings always included limits. Only restore limits explicitly chosen
+    // in this version so existing users receive the new whole-website default.
+    if (settings?.version === 2) {
       if ([30, 60, 120, 300, 600].includes(settings.durationSeconds)) $("duration").value = String(settings.durationSeconds);
       if ([25, 50, 100, 150].includes(settings.maxPages)) $("page-limit").value = String(settings.maxPages);
+      if (settings.durationSeconds !== null || settings.maxPages !== null) $("scan-options").open = true;
     }
     scan = await command("GET_STATE");
     const { historyError } = await chrome.storage.session.get("historyError");

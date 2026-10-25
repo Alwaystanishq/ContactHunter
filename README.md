@@ -1,7 +1,7 @@
 # ContactHunter
 
 - A Chrome extension for discovering publicly available email addresses, phone numbers, and postal addresses on websites.
-- Crawls eligible internal pages for a selected duration, removes duplicate contacts, and displays results as scanning progresses.
+- Crawls eligible internal pages, removes duplicate contacts, and displays results as scanning progresses.
 - Includes export review, CSV downloads, and optional local scan history.
 - Built with Chrome Manifest V3, JavaScript, HTML, and CSS.
 - Runs locally without a backend, API keys, external services, or a build step.
@@ -13,10 +13,11 @@
 - Start a scan from the website open in your active tab.
 - Automatically discover links and crawl eligible pages on the same origin: scheme, hostname, and port.
 - Prioritize likely contact pages, including contact, about, team, support, legal, and similar URLs.
-- Choose a scan duration of **30 seconds, 1 minute, 2 minutes, 5 minutes, or 10 minutes**.
-- Choose a page limit of **25, 50, 100, or 150 pages**.
-- Use **2 minutes** and **100 pages** as the default settings.
-- Save duration and page-limit preferences for future use.
+- Use **Scan whole website** by default, starting from the homepage and current page and following eligible internal links without a selected time or page limit.
+- Open **Scan options** to optionally limit time to **30 seconds, 1 minute, 2 minutes, 5 minutes, or 10 minutes**.
+- Optionally limit scanning to **25, 50, 100, or 150 pages**, independently of the time limit.
+- Leave both options at **No limit** to return to whole-website scanning. Existing URL discovery and contact safety caps still apply.
+- Save explicitly chosen time and page-limit preferences for future use; previous automatic defaults do not enable limits.
 - Run one scan at a time.
 - Continue scanning when the popup closes.
 - Save crawl checkpoints in session storage and recover work after service-worker suspension.
@@ -24,9 +25,10 @@
 
 ### Scan controls
 
-- **Start scanning:** check website restrictions and begin collecting public contacts.
-- **Pause scan:** cancel the current request, preserve the queue, and freeze the remaining scan time.
-- **Resume scan:** continue a paused scan from its saved queue.
+- **Scan whole website:** check website restrictions and begin collecting public contacts from eligible linked pages.
+- **Scan options:** optionally choose a time limit, page limit, or both; the action becomes **Start limited scan**.
+- **Pause scan:** cancel the current request, preserve the queue, and freeze elapsed scan time.
+- **Resume scan:** continue a paused scan from its saved queue and apply any selected limits.
 - **Stop:** end scanning and retain the contacts collected so far.
 - **Clear results:** stop active work and remove the current session's contacts and scan activity.
 - **Revoke access:** stop scanning and remove the extension's permission for the scanned website.
@@ -34,7 +36,7 @@
 ### Live progress and results
 
 - Display the target website and current scan status.
-- Show elapsed time, selected duration, and a progress bar.
+- Show elapsed time and a progress bar based on the selected limit or currently discovered pages; show the selected duration alongside elapsed time only when a time limit is selected.
 - Display the page currently being processed.
 - Update email, phone, postal address, and successfully scanned page counts live.
 - Show queued and skipped page counts.
@@ -176,7 +178,7 @@
 ## Usage
 
 1. Open a public HTTP or HTTPS page on the website you want to scan.
-2. Open ContactHunter, choose a duration and page limit, and click **Start scanning**.
+2. Open ContactHunter and click **Scan whole website**. To stop earlier, open **Scan options**, choose an optional time and/or page limit, and click **Start limited scan**.
 3. Grant website access if Chrome prompts for it.
 4. Monitor results and use Pause, Resume, or Stop as needed.
 5. Click **Review export**, check the contacts to include, and choose **Download CSV**.
@@ -218,8 +220,8 @@
 
 ## Limits and known limitations
 
-- **Scan duration:** 30 seconds to 10 minutes; robots checks and request delays count toward active scan time.
-- **Pages checked:** up to 150 per scan.
+- **Scan duration:** no selected time limit by default; optional limits range from 30 seconds to 10 minutes. Robots checks and request delays count toward active scan time.
+- **Pages checked:** no selected page limit by default, subject to the 500-URL discovery cap; optional page limits range from 25 to 150.
 - **Discovered URLs:** up to 500 per scan.
 - **Unique contacts:** up to 1,000 per scan.
 - **Sources per contact:** up to 5 distinct URLs.

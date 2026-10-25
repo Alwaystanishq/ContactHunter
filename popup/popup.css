@@ -53,6 +53,10 @@ main { padding: 2px 20px 0; max-height: 490px; overflow-y: auto; scrollbar-width
 .site p { margin: 4px 0 0; color: var(--subtle); font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .settings { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .settings label { color: var(--muted); font-size: 11px; }
+.scan-options { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); color: var(--muted); font-size: 10px; }
+.scan-options summary { display: flex; align-items: center; gap: 3px; }
+.scan-options summary > span { margin-left: auto; color: var(--subtle); }
+.scan-options p { margin: 10px 0; color: var(--subtle); font-size: 10px; }
 select { display: block; width: 100%; min-height: 34px; margin-top: 6px; padding: 7px 9px; border: 1px solid #353744; background: #111218; color: var(--text); font-size: 11px; }
 select:hover:enabled { border-color: #646079; }
 .controls { display: flex; gap: 8px; margin-top: 12px; }

@@ -18,18 +18,22 @@
       <section class="scan-card" aria-label="Scan controls">
         <div class="site-heading"><span class="label">Target website</span><span class="public-tag"><i aria-hidden="true"></i> Public pages only</span></div>
         <div class="site"><h2 id="site-name">Finding your active tab…</h2><p id="site-url">Open a website to begin</p></div>
-        <div class="settings">
-          <label>Scan duration<select id="duration"><option value="30">30 seconds</option><option value="60">1 minute</option><option value="120" selected>2 minutes</option><option value="300">5 minutes</option><option value="600">10 minutes</option></select></label>
-          <label>Page limit<select id="page-limit"><option value="25">25 pages</option><option value="50">50 pages</option><option value="100" selected>100 pages</option><option value="150">150 pages</option></select></label>
-        </div>
         <div class="controls">
-          <button id="start" class="primary" disabled><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 10 7-10 7z"/></svg>Start scan</button>
+          <button id="start" class="primary" disabled><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 10 7-10 7z"/></svg><span id="start-label">Scan whole website</span></button>
           <button id="pause" class="primary" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>Pause scan</button>
           <button id="resume" class="primary" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 10 7-10 7z"/></svg>Resume scan</button>
           <button id="stop" class="secondary" hidden>Stop</button>
         </div>
+        <details id="scan-options" class="scan-options">
+          <summary>Scan options <span id="scan-options-label">Whole website</span></summary>
+          <p>Set optional limits for a shorter scan.</p>
+          <div class="settings">
+            <label>Time limit<select id="duration"><option value="" selected>No time limit</option><option value="30">30 seconds</option><option value="60">1 minute</option><option value="120">2 minutes</option><option value="300">5 minutes</option><option value="600">10 minutes</option></select></label>
+            <label>Page limit<select id="page-limit"><option value="" selected>No page limit</option><option value="25">25 pages</option><option value="50">50 pages</option><option value="100">100 pages</option><option value="150">150 pages</option></select></label>
+          </div>
+        </details>
         <div id="progress-section" class="progress-section" hidden>
-          <div class="progress-label"><span id="progress-label">Scanning</span><span id="timer">0:00 / 2:00</span></div>
+          <div class="progress-label"><span id="progress-label">Scanning</span><span id="timer">0:00 elapsed</span></div>
           <progress id="progress" max="100" value="0" aria-label="Scan progress"></progress>
           <p id="current-url" class="current-url"></p>
         </div>
