@@ -52,8 +52,8 @@ function renderContacts(force = false) {
     const row = document.createElement("li");
     const icon = document.createElement("span");
     icon.className = `contact-type ${contact.type}`;
-    icon.textContent = contact.type === "email" ? "@" : "☎";
-    icon.setAttribute("aria-label", contact.type === "email" ? "Email" : "Phone");
+    icon.textContent = { email: "@", phone: "☎", address: "⌂" }[contact.type];
+    icon.setAttribute("aria-label", { email: "Email", phone: "Phone", address: "Address" }[contact.type]);
     const info = document.createElement("div");
     info.className = "contact-info";
     const value = document.createElement("span");
@@ -89,8 +89,8 @@ function renderContacts(force = false) {
   const description = $("empty").querySelector("p");
   heading.textContent = scan.contacts.length ? "No matching contacts" : ACTIVE.has(scan.status) ? "Following the trail…" : "Your next connection starts here";
   description.textContent = scan.contacts.length ? "Try another search or contact type." : ACTIVE.has(scan.status)
-    ? "Public emails and phone numbers will appear here as we find them."
-    : scan.status === "idle" ? "Start a scan to find public emails and phone numbers. Your discoveries will appear as we find them."
+    ? "Public emails, phone numbers, and postal addresses will appear here as we find them."
+    : scan.status === "idle" ? "Start a scan to find public emails, phone numbers, and postal addresses. Your discoveries will appear as we find them."
       : "No contacts collected. Check scan activity for skipped pages or try another public website.";
   $("result-summary").hidden = !contacts.length;
   $("result-summary").textContent = `${Math.min(contacts.length, 150)} of ${contacts.length} matching contacts · Duplicates removed${contacts.length > 150 ? " · Review export to see all" : ""}`;
@@ -150,6 +150,7 @@ function render() {
   $("status-message").textContent = !selectedOrigin && scan.status === "idle" ? "Visit a public HTTP or HTTPS website to get started." : scan.message;
   $("email-count").textContent = scan.contacts.filter((contact) => contact.type === "email").length;
   $("phone-count").textContent = scan.contacts.filter((contact) => contact.type === "phone").length;
+  $("address-count").textContent = scan.contacts.filter((contact) => contact.type === "address").length;
   $("page-count").textContent = scan.scanned;
   $("total-count").textContent = scan.contacts.length;
   renderClock();

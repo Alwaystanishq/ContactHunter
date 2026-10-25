@@ -3,7 +3,7 @@
   "name": "ContactHunter",
   "version": "1.0.0",
   "minimum_chrome_version": "120",
-  "description": "Discover public emails and phone numbers with a timed, privacy-conscious website scan. Export contacts to CSV.",
+  "description": "Discover public emails, phone numbers, and postal addresses with a timed website scan. Export contacts to CSV.",
   "permissions": ["activeTab", "storage", "alarms", "offscreen"],
   "optional_host_permissions": ["https://*/*", "http://*/*"],
   "action": {

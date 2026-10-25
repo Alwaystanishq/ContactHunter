@@ -3,8 +3,9 @@ import { extractContacts } from "./lib/contacts.js";
 import { robotDirectives } from "./lib/robots.js";
 
 const BLOCK_ELEMENTS = new Set(["ADDRESS", "ARTICLE", "ASIDE", "BLOCKQUOTE", "BR", "DD", "DIV", "DL", "DT", "FIELDSET", "FIGCAPTION", "FIGURE", "FOOTER", "H1", "H2", "H3", "H4", "H5", "H6", "HEADER", "HR", "LI", "MAIN", "NAV", "OL", "P", "PRE", "SECTION", "TABLE", "TD", "TH", "TR", "UL"]);
+const ADDRESS_SELECTOR = 'address, [itemprop~="address"], [itemtype~="https://schema.org/PostalAddress"], [itemtype~="http://schema.org/PostalAddress"]';
 
-function pageText(root) {
+function pageText(root, separateInline = false) {
   const parts = [];
   const completeContact = /(?:[^\s@]+@[^\s@]+\.[a-z]{2,}|\d[\d ().+-]{7,}\d)/i;
   const walk = (node) => {
@@ -13,6 +14,7 @@ function pageText(root) {
       // such as <span>info@</span><span>example.com</span>.
       if (completeContact.test(parts.at(-1) || "") && completeContact.test(node.textContent)) parts.push("\n");
       parts.push(node.textContent);
+      if (separateInline) parts.push(" ");
       return;
     }
     const block = BLOCK_ELEMENTS.has(node.nodeName);
@@ -66,8 +68,20 @@ export function parsePage(html, url) {
       try { return new URL(anchor.getAttribute("href"), base).href; } catch { return null; }
     }).filter(Boolean).slice(0, 1000) : [];
 
+  const text = directives.collect ? pageText(doc) : "";
+  const addressCandidates = [];
+  if (directives.collect) {
+    for (const node of [...doc.querySelectorAll(ADDRESS_SELECTOR)].filter((node) => !node.parentElement?.closest(ADDRESS_SELECTOR))) {
+      const properties = ["streetAddress", "postOfficeBoxNumber", "addressLocality", "addressRegion", "postalCode", "addressCountry"]
+        .map((name) => [...node.querySelectorAll(`[itemprop~="${name}"]`)].map((part) => pageText(part, true).trim()).filter(Boolean).join(" "))
+        .filter(Boolean);
+      addressCandidates.push(properties.length ? properties.join(", ") : pageText(node, true));
+      // Avoid extracting a second, partial copy from the generic text scan.
+      node.remove();
+    }
+  }
   return {
-    contacts: directives.collect ? extractContacts(pageText(doc), contactLinks).slice(0, 1000) : [],
+    contacts: directives.collect ? extractContacts(text, contactLinks, { addressCandidates, addressText: pageText(doc) }).slice(0, 1000) : [],
     links,
     restricted: !directives.collect,
     reason: !directives.collect ? "Page robots directives restrict collection" : "",

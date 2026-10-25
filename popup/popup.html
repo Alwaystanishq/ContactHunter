@@ -39,13 +39,14 @@
       <section class="metrics" aria-label="Scan statistics">
         <div><span id="email-count">0</span><p><span class="metric-icon" aria-hidden="true">@</span> Emails found</p></div>
         <div><span id="phone-count">0</span><p><span class="metric-icon" aria-hidden="true">⌕</span> Phone numbers</p></div>
+        <div><span id="address-count">0</span><p><span class="metric-icon" aria-hidden="true">⌂</span> Addresses</p></div>
         <div><span id="page-count">0</span><p><span class="metric-icon" aria-hidden="true">▤</span> Pages scanned</p></div>
       </section>
 
       <section class="results" aria-labelledby="results-heading">
         <div class="results-heading"><h2 id="results-heading">Discovered contacts <span id="total-count">0</span></h2><button id="export" class="export" disabled><span aria-hidden="true">↓</span> Review export</button></div>
-        <div class="result-toolbar"><div class="filters" role="group" aria-label="Filter contacts"><button data-filter="all" aria-pressed="true">All</button><button data-filter="email" aria-pressed="false">Emails</button><button data-filter="phone" aria-pressed="false">Phones</button></div><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search contacts" aria-label="Search contacts" /></label></div>
-        <div id="empty" class="empty"><div class="empty-icon" aria-hidden="true"><span>⌕</span><i></i><b></b></div><h3>Your next connection starts here</h3><p>Start a scan to find public emails and phone numbers.<br />Your discoveries will appear as we find them.</p></div>
+        <div class="result-toolbar"><div class="filters" role="group" aria-label="Filter contacts"><button data-filter="all" aria-pressed="true">All</button><button data-filter="email" aria-pressed="false">Emails</button><button data-filter="phone" aria-pressed="false">Phones</button><button data-filter="address" aria-pressed="false">Addresses</button></div><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search contacts" aria-label="Search contacts" /></label></div>
+        <div id="empty" class="empty"><div class="empty-icon" aria-hidden="true"><span>⌕</span><i></i><b></b></div><h3>Your next connection starts here</h3><p>Start a scan to find public emails, phone numbers, and postal addresses.<br />Your discoveries will appear as we find them.</p></div>
         <ul id="contact-list" class="contact-list" aria-label="Discovered contacts"></ul>
         <p id="result-summary" class="result-summary" hidden></p>
       </section>
@@ -74,7 +75,7 @@
       <p id="review-description" class="review-description">Uncheck contacts to exclude them from this download. Your scan results stay available.</p>
       <div class="review-totals"><strong id="review-selected-count">0 selected</strong><span id="review-breakdown"></span></div>
       <p id="review-snapshot" class="review-snapshot" role="status"></p>
-      <div class="review-tools"><label class="search"><span aria-hidden="true">⌕</span><input id="review-search" type="search" placeholder="Search contacts or sources" aria-label="Search contacts for export" /></label><label class="review-type-label"><span class="sr-only">Contact type</span><select id="review-type"><option value="all">All types</option><option value="email">Emails</option><option value="phone">Phones</option></select></label></div>
+      <div class="review-tools"><label class="search"><span aria-hidden="true">⌕</span><input id="review-search" type="search" placeholder="Search contacts or sources" aria-label="Search contacts for export" /></label><label class="review-type-label"><span class="sr-only">Contact type</span><select id="review-type"><option value="all">All types</option><option value="email">Emails</option><option value="phone">Phones</option><option value="address">Addresses</option></select></label></div>
       <div class="review-bulk"><label><input id="review-matching" type="checkbox" /><span id="review-matching-label">Select matching contacts</span></label><div><button id="review-select-all" type="button">Select all</button><button id="review-clear-selection" type="button">Clear selection</button></div></div>
       <label class="review-selected-only"><input id="review-selected-only" type="checkbox" /> Show selected only</label>
       <div id="review-scroll" class="review-scroll"><ul id="review-list" class="review-list" aria-label="Contacts to review"></ul><p id="review-empty" class="review-empty" hidden>No matching contacts. Try another filter.</p></div>

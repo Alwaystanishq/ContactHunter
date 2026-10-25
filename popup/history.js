@@ -89,7 +89,7 @@ export class HistoryPanel {
       date.title = `Auto-deletes ${new Date(entry.expiresAt).toLocaleString()}`;
       const counts = document.createElement("p");
       counts.className = "history-stats";
-      counts.textContent = `${entry.emailCount} emails · ${entry.phoneCount} phones · ${entry.scanned} pages`;
+      counts.textContent = `${entry.emailCount} emails · ${entry.phoneCount} phones · ${entry.addressCount ?? 0} addresses · ${entry.scanned} pages`;
       const message = document.createElement("p");
       message.className = "history-message";
       message.textContent = entry.message;

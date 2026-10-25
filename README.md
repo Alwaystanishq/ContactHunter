@@ -1,6 +1,6 @@
 # ContactHunter
 
-- A Chrome extension for discovering publicly available email addresses and phone numbers on websites.
+- A Chrome extension for discovering publicly available email addresses, phone numbers, and postal addresses on websites.
 - Crawls eligible internal pages for a selected duration, removes duplicate contacts, and displays results as scanning progresses.
 - Includes export review, CSV downloads, and optional local scan history.
 - Built with Chrome Manifest V3, JavaScript, HTML, and CSS.
@@ -36,12 +36,12 @@
 - Display the target website and current scan status.
 - Show elapsed time, selected duration, and a progress bar.
 - Display the page currently being processed.
-- Update email, phone, and successfully scanned page counts live.
+- Update email, phone, postal address, and successfully scanned page counts live.
 - Show queued and skipped page counts.
 - View recent scan activity, skipped-page explanations, access errors, and completion reasons.
 - See scanning or paused status on the extension's toolbar badge.
 - Search discovered contacts by value or source URL.
-- Filter results by **All**, **Emails**, or **Phones**.
+- Filter results by **All**, **Emails**, **Phones**, or **Addresses**.
 - Copy individual contacts to the clipboard.
 - Open source pages from contact results.
 - Display up to 150 matching contacts in the main list; review all retained contacts through export review.
@@ -75,19 +75,29 @@
 - Match local and international representations when an explicit country code supplies an unambiguous match.
 - Keep detection entirely offline, without sending contacts to a validation service.
 
+### Postal address detection
+
+- Extract visible postal addresses from `<address>` elements and Schema.org address microdata.
+- Recognize labeled addresses, registered/head offices, and common street-style addresses in public text.
+- Combine multiline street, locality, region, postal code, and country information into a single contact.
+- Keep phone numbers and email addresses out of postal address values.
+- Normalize casing, whitespace, and punctuation for duplicate removal, retaining source pages.
+- Search, copy, filter, review, export, and save addresses alongside emails and phones.
+- Use offline format checks; addresses are not geocoded or verified for deliverability.
+
 ### Review before export
 
 - Open **Review export** before downloading a CSV.
 - Review a snapshot of contacts and source URLs captured when the review opens.
 - Select or exclude individual contacts using checkboxes.
 - Search contacts and sources within the review.
-- Filter by email or phone type.
+- Filter by email, phone, or postal address type.
 - Use **Select matching**, **Select all**, or **Clear selection** for bulk changes.
 - Select matching contacts across all review pages, including matches outside the visible page.
 - Use **Show selected only** to inspect the included contacts.
 - Browse all captured contacts in pages of 50.
 - View every retained source URL for each contact.
-- See selected contact counts, email/phone counts, and the resulting CSV row count.
+- See selected contact counts, email/phone/address counts, and the resulting CSV row count.
 - Keep incoming contacts and source updates out of an already-open review; reopen it to capture newer results.
 - Cancel or press Escape to leave the review without downloading.
 - Reset the selection when the review closes; exclusions affect the download rather than deleting collected contacts.
@@ -226,6 +236,7 @@
 - **Visibility detection:** handles explicit hidden attributes and common inline styles, but does not evaluate external stylesheets or all CSS visibility rules.
 - **Email coverage:** common ASCII addresses, common bracketed `at`/`dot` spellings, and public Cloudflare markup; arbitrary JavaScript obfuscation is not executed.
 - **Phone accuracy:** offline format/context checks, not comprehensive national numbering-plan or reachability validation; country codes are not guessed for local numbers.
+- **Postal address accuracy:** visible semantic address markup and common English address labels/street formats; unusual layouts or other unmarked formats may be missed. Addresses are not verified for deliverability, and JSON-LD scripts are not processed.
 - **Review freshness:** a review is a snapshot; reopen it to include newer contacts and sources.
 - **Browser compatibility:** targets Chrome 120+; Firefox and Safari are not configured.
 - **Verification status:** Chrome installation and UI behavior have not been verified in this development environment.
@@ -241,6 +252,7 @@ ContactHunter/
 ├── lib/
 │   ├── contacts.js           Email extraction and contact deduplication
 │   ├── phones.js             Phone extraction, context, and format checks
+│   ├── addresses.js          Postal address extraction and normalization
 │   ├── crawler.js            Crawl queue, timing, and scan controls
 │   ├── network.js            Bounded public-page fetching
 │   ├── robots.js             Crawl rules and page directives
