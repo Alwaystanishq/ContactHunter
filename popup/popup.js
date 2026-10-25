@@ -2,6 +2,7 @@ import { ExportReview } from "./export-review.js";
 import { HistoryPanel } from "./history.js";
 import { ACTIVE, emptyScan, elapsedTime } from "../lib/crawler.js";
 import { normalizeUrl, sitePattern } from "../lib/urls.js";
+import { formatPhone } from "../lib/phones.js";
 
 const $ = (id) => document.getElementById(id);
 const CONTACT_ICONS = {
@@ -69,10 +70,11 @@ function renderContacts(force = false) {
   lastContacts = scan.contacts;
   const query = $("search").value.trim().toLowerCase();
   const contacts = scan.contacts.filter((contact) => (filter === "all" || contact.type === filter) &&
-    (!query || `${contact.value} ${contact.sources.join(" ")}`.toLowerCase().includes(query)));
+    (!query || `${contact.value} ${contact.type === "phone" ? `${formatPhone(contact.value)} ${contact.value.replace(/\s+/g, "")}` : ""} ${contact.sources.join(" ")}`.toLowerCase().includes(query)));
   const fragment = document.createDocumentFragment();
   // Keep the popup responsive; export review can access the entire result set.
   for (const contact of contacts.slice(0, 150)) {
+    const displayValue = contact.type === "phone" ? formatPhone(contact.value) : contact.value;
     const row = document.createElement("li");
     const icon = document.createElement("span");
     icon.className = `contact-type ${contact.type}`;
@@ -84,7 +86,7 @@ function renderContacts(force = false) {
     info.className = "contact-info";
     const value = document.createElement("span");
     value.className = "contact-value";
-    value.textContent = contact.value;
+    value.textContent = displayValue;
     const source = document.createElement("a");
     source.className = "contact-source";
     source.href = contact.sources[0];
@@ -97,10 +99,10 @@ function renderContacts(force = false) {
     const copy = document.createElement("button");
     copy.className = "copy";
     copy.textContent = "Copy";
-    copy.setAttribute("aria-label", `Copy ${contact.value}`);
+    copy.setAttribute("aria-label", `Copy ${displayValue}`);
     copy.addEventListener("click", async () => {
       try {
-        await navigator.clipboard.writeText(contact.value);
+        await navigator.clipboard.writeText(displayValue);
         copy.textContent = "Copied";
         setTimeout(() => { copy.textContent = "Copy"; }, 1500);
       } catch { notice("Could not copy this contact. You can select its text or export a CSV."); }

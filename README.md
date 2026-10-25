@@ -66,6 +66,7 @@
 - Support labels appearing in a preceding text node or on the previous line.
 - Normalize spaces, hyphens, periods, and parentheses in phone formatting.
 - Recognize `+` and `00` international prefixes.
+- Display a space after the country code, such as `+91 9876543210`, including copied contacts and CSV exports.
 - Remove optional `(0)` trunk prefixes for selected international calling codes.
 - Support extensions written with `ext`, `extn`, `extension`, `x`, `#`, or telephone-link `;ext=` parameters.
 - Resolve numeric `phone-context` prefixes in telephone links.

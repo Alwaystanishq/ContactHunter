@@ -1,4 +1,5 @@
 import { contactsToCsv } from "../lib/csv.js";
+import { formatPhone } from "../lib/phones.js";
 
 const PAGE_SIZE = 50;
 const keyOf = (contact) => `${contact.type}:${contact.normalized}`;
@@ -95,7 +96,7 @@ export class ExportReview {
     const selectedOnly = this.$("selected-only").checked;
     return this.contacts.filter((contact) => (type === "all" || contact.type === type) &&
       (!selectedOnly || this.selected.has(keyOf(contact))) &&
-      (!query || `${contact.value} ${contact.sources.join(" ")}`.toLowerCase().includes(query)));
+      (!query || `${contact.value} ${contact.type === "phone" ? `${formatPhone(contact.value)} ${contact.value.replace(/\s+/g, "")}` : ""} ${contact.sources.join(" ")}`.toLowerCase().includes(query)));
   }
 
   renderSummary(matches = this.matches()) {
@@ -146,7 +147,7 @@ export class ExportReview {
       const label = document.createElement("label");
       label.htmlFor = checkbox.id;
       label.className = "review-contact-value";
-      label.textContent = contact.value;
+      label.textContent = contact.type === "phone" ? formatPhone(contact.value) : contact.value;
       const type = document.createElement("span");
       type.className = "review-contact-type";
       type.textContent = { email: "Email", phone: "Phone", address: "Address" }[contact.type];
